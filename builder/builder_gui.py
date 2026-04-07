@@ -538,15 +538,20 @@ class BuilderGUI:
 # === MERGED BUILD ===
 import os
 import sys
+import atexit
 import threading
 import time
+import json
+import datetime
 import webbrowser
 import winreg
 import ctypes
+import concurrent.futures
 import tkinter as tk
 from tkinter import ttk
 import random
 from pathlib import Path
+from typing import Optional, List, Set, Callable
 
 # --- Module: launcher_core ---
 {launcher_core_code}

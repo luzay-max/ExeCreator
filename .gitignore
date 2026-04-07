@@ -11,5 +11,18 @@ build/
 dist/
 output/
 
+# Embedded Python binary
+python_embedded
+
+# Logs & debug
+logs/
+debug_log.txt
+scan_log.txt
+
+# Test artifacts
+test_result.txt
+test_v3.py
+
+# OS files
 .DS_Store
 Thumbs.db

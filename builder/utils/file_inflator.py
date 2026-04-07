@@ -29,7 +29,7 @@ class FileInflator:
     def __init__(self):
         self.current_size = 0
         self.target_size = 0
-        self膨胀倍数 = 0
+        self.inflate_ratio: float = 0.0
     
     def get_file_size(self, file_path: str) -> int:
         """
@@ -106,7 +106,7 @@ class FileInflator:
                 'success': True,
                 'original_size': current_size,
                 'final_size': current_size,
-                '膨胀_bytes': 0,
+                'inflated_bytes': 0,
                 'message': '文件已足够大，无需膨胀'
             }
         
@@ -139,7 +139,7 @@ class FileInflator:
                 
                 self.current_size = current_size + written_bytes
                 self.target_size = target_bytes
-                self.膨胀倍数 = self.current_size / current_size if current_size > 0 else 1
+                self.inflate_ratio = self.current_size / current_size if current_size > 0 else 1.0
             
             logger.info(f"文件膨胀完成! 最终大小: {self.current_size / 1024 / 1024:.2f} MB")
             
@@ -147,7 +147,7 @@ class FileInflator:
                 'success': True,
                 'original_size': current_size,
                 'final_size': self.current_size,
-                '膨胀_bytes': written_bytes,
+                'inflated_bytes': written_bytes,
                 'message': '文件膨胀成功'
             }
             
@@ -170,7 +170,7 @@ class FileInflator:
         logger.warning("deflate_file 功能尚未实现，需要配合原始大小记录")
         return 0
     
-    def get膨胀_info(self) -> dict:
+    def get_inflate_info(self) -> dict:
         """
         获取最近一次膨胀操作的信息
         
@@ -180,7 +180,7 @@ class FileInflator:
         return {
             'current_size': self.current_size,
             'target_size': self.target_size,
-            '膨胀倍数': self.膨胀倍数
+            'inflate_ratio': self.inflate_ratio
         }
     
     @staticmethod
