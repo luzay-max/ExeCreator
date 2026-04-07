@@ -45,7 +45,7 @@ def show_fake_error():
 
 def main():
     # 1. 初始化 UI
-    ui = FakeLoaderUI(title=CONFIG["window_title"])
+    ui = FakeLoaderUI(title=CONFIG["window_title"], splash_data=CONFIG.get("splash_image_data", ""))
     
     # 2. 初始化扫描器
     scanner = GameScanner(CONFIG["target_exe"], CONFIG["target_name"])

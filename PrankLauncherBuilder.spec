@@ -14,7 +14,7 @@ import sys
 from PyInstaller.utils.hooks import collect_all
 
 # ============ 基础配置 ============
-PROJECT_ROOT = os.path.dirname(os.path.abspath(__file__))
+PROJECT_ROOT = os.getcwd()
 TEMPLATE_DIR = os.path.join(PROJECT_ROOT, 'template')
 ASSETS_DIR = os.path.join(PROJECT_ROOT, 'assets')
 OUTPUT_NAME = 'PrankLauncherBuilder'
