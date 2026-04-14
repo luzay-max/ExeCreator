@@ -182,3 +182,41 @@ class FileOperationError(BuildError):
         details = reason or f"无法完成文件操作: {operation}"
         super().__init__(message, details)
 
+
+class ScanError(BuildError):
+    """扫描过程错误"""
+    
+    def __init__(self, scanner_name, reason=None):
+        message = f"扫描失败: {scanner_name}"
+        details = reason or "扫描过程中发生未知错误"
+        super().__init__(message, details)
+
+
+# ============ 全局未捕获异常处理器 ============
+
+def install_global_handler():
+    """
+    安装全局未捕获异常处理器。
+    
+    在主入口（如 builder_gui.py 的 main()）中调用一次即可。
+    所有未被 try/except 捕获的异常都会被记录到日志 + 弹窗提示。
+    """
+    def _global_excepthook(exc_type, exc_value, exc_tb):
+        if issubclass(exc_type, KeyboardInterrupt):
+            sys.__excepthook__(exc_type, exc_value, exc_tb)
+            return
+        
+        error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
+        logger.critical(f"未捕获的异常:\n{error_msg}")
+        
+        try:
+            show_error_dialog(
+                f"程序发生了未预期的错误:\n\n{exc_value}\n\n"
+                f"详细信息已记录到日志文件。",
+                "致命错误"
+            )
+        except Exception:
+            print(f"致命错误: {error_msg}")
+    
+    sys.excepthook = _global_excepthook
+

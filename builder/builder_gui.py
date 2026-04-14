@@ -24,15 +24,17 @@ from builder_core import BuilderCore
 from widgets.config_panel import ConfigPanel
 from widgets.log_viewer import LogViewer
 
-logger = logging.getLogger(__name__)
+try:
+    from builder.utils.constants import VERSION, APP_NAME, APP_TITLE, LOG_FORMAT
+except ImportError:
+    from utils.constants import VERSION, APP_NAME, APP_TITLE, LOG_FORMAT
 
-VERSION = "3.0.0"
-APP_NAME = "PrankLauncherBuilder"
+logger = logging.getLogger(__name__)
 
 class BuilderGUI:
     def __init__(self):
         self.root = tk.Tk()
-        self.root.title(f"恶搞启动器生成工具 v{VERSION}")
+        self.root.title(APP_TITLE)
         self.root.geometry("680x900")
         self.root.minsize(650, 850)
         
@@ -65,7 +67,7 @@ class BuilderGUI:
         os.makedirs(log_dir, exist_ok=True)
         log_file = os.path.join(log_dir, f'builder_{int(__import__("time").time())}.log')
         logging.basicConfig(level=logging.INFO,
-                            format='[%(asctime)s] %(levelname)s: %(message)s',
+                            format=LOG_FORMAT,
                             handlers=[logging.FileHandler(log_file, encoding='utf-8'),
                                       logging.StreamHandler()])
 
@@ -169,6 +171,17 @@ class BuilderGUI:
         self.root.mainloop()
 
 def main():
+    # 安装全局未捕获异常处理器
+    try:
+        from builder.utils.errors import install_global_handler
+    except ImportError:
+        try:
+            from utils.errors import install_global_handler
+        except ImportError:
+            install_global_handler = None
+    if install_global_handler:
+        install_global_handler()
+
     try:
         import sys
         if getattr(sys, 'frozen', False):
