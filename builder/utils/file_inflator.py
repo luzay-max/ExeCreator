@@ -65,8 +65,8 @@ class FileInflator:
             except ValueError:
                 raise ValueError(f"无法解析大小字符串: {size_str}")
         
-        # 解析带单位的大小
-        for unit, multiplier in self.SIZE_UNITS.items():
+        # 解析带单位的大小（按单位长度降序匹配，避免 B 先匹配 MB/KB/GB）
+        for unit, multiplier in sorted(self.SIZE_UNITS.items(), key=lambda x: len(x[0]), reverse=True):
             if size_str.upper().endswith(unit.upper()):
                 try:
                     value = float(size_str[:-len(unit)])
