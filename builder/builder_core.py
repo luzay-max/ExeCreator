@@ -94,6 +94,26 @@ class BuilderCore:
             launcher_core_code = self._read_template_file("launcher_core.py", template_dir)
             boot_code = self._read_template_file("boot.py", template_dir)
             
+            # 读取 scanner 子模块
+            scanner_dir = os.path.join(template_dir, "scanner")
+            scanner_modules_code = ""
+            for mod_name in ["base_scanner.py", "cache_scanner.py", "registry_scanner.py", "drive_scanner.py"]:
+                mod_path = os.path.join(scanner_dir, mod_name)
+                if os.path.exists(mod_path):
+                    mod_code = self._read_template_file(os.path.join("scanner", mod_name), template_dir)
+                    # 移除相对导入（合并后所有类已在同一文件中）
+                    mod_code = re.sub(r'from\s+\..*?import.*\n', '', mod_code)
+                    scanner_modules_code += f"\n# --- Scanner Module: {mod_name} ---\n{mod_code}\n"
+                    self._log(f"  已读取扫描器模块: {mod_name}")
+            
+            # 移除 launcher_core 中的 scanner 包导入（合并后不需要）
+            launcher_core_code = re.sub(
+                r'try:\s*\n\s*from scanner import.*?\n.*?pass\s*\n',
+                '# (scanner modules inlined above)\n',
+                launcher_core_code,
+                flags=re.DOTALL
+            )
+            
             if 'if __name__ == "__main__":' in fake_ui_code:
                 fake_ui_code = fake_ui_code.split('if __name__ == "__main__":')[0]
                 
@@ -138,6 +158,9 @@ import random
 from pathlib import Path
 from typing import Optional, List, Set, Callable
 import base64
+
+# --- Scanner Modules (inlined) ---
+{scanner_modules_code}
 
 # --- Module: launcher_core ---
 {launcher_core_code}

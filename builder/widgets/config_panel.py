@@ -6,7 +6,47 @@ class ConfigPanel(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.pack(fill=tk.BOTH, expand=True)
+        self._init_templates()
         self._setup_ui()
+        
+    def _init_templates(self):
+        self.templates = {
+            "原神 (Genshin Impact)": {
+                "target_exe": "YuanShen.exe",
+                "target_name": "原神",
+                "fallback_url": "https://ys.mihoyo.com",
+                "error_message": "无法定位程序输入点于动态链接库 Kernel32.dll。",
+                "window_title": "正在加载游戏资源..."
+            },
+            "崩坏：星穹铁道 (Honkai: Star Rail)": {
+                "target_exe": "StarRail.exe",
+                "target_name": "崩坏：星穹铁道",
+                "fallback_url": "https://sr.mihoyo.com",
+                "error_message": "发生严重错误，驱动加载超时 (0x0000007b)",
+                "window_title": "星穹列车连接中..."
+            },
+            "英雄联盟 (League of Legends)": {
+                "target_exe": "LeagueClient.exe",
+                "target_name": "英雄联盟",
+                "fallback_url": "https://lol.qq.com",
+                "error_message": "A critical component failed to initialize.",
+                "window_title": "Riot Client / League of Legends"
+            },
+            "微信 (WeChat)": {
+                "target_exe": "WeChat.exe",
+                "target_name": "微信",
+                "fallback_url": "https://weixin.qq.com",
+                "error_message": "WeChatUpdate.exe 丢失，无法启动。",
+                "window_title": "加载本地聊天记录..."
+            },
+            "Steam Client": {
+                "target_exe": "steam.exe",
+                "target_name": "Steam",
+                "fallback_url": "https://store.steampowered.com",
+                "error_message": "Fatal Error: Steam needs to be online to update.",
+                "window_title": "Updating Steam..."
+            }
+        }
         
     def _create_section(self, title):
         frame = ttk.LabelFrame(self, text=title, padding="10")
@@ -23,6 +63,15 @@ class ConfigPanel(ttk.Frame):
         return entry
 
     def _setup_ui(self):
+        # 0. 快速模板选择
+        tpl_frame = ttk.Frame(self)
+        tpl_frame.pack(fill='x', pady=5)
+        ttk.Label(tpl_frame, text="快速模板预设:").pack(side='left')
+        self.template_combo = ttk.Combobox(tpl_frame, state='readonly', values=list(self.templates.keys()))
+        self.template_combo.set("--- 请选择快速模板 ---")
+        self.template_combo.pack(side='left', fill='x', expand=True, padx=5)
+        self.template_combo.bind("<<ComboboxSelected>>", self._on_template_selected)
+
         # 1. 目标程序设置
         target_frame = self._create_section("目标程序设置")
         self.target_exe = self._create_entry(target_frame, "目标进程名 (如 YuanShen.exe):", "YuanShen.exe")
@@ -66,6 +115,12 @@ class ConfigPanel(ttk.Frame):
         self.meta_desc = self._create_entry(meta_frame, "文件描述:", "Game Client")
         self.meta_copyright = self._create_entry(meta_frame, "版权信息:", "© Microsoft Corporation. All rights reserved.")
         self.meta_version = self._create_entry(meta_frame, "版本号 (X.X.X.X):", "1.0.0.1")
+
+    def _on_template_selected(self, event):
+        selected = self.template_combo.get()
+        if selected in self.templates:
+            tpl = self.templates[selected]
+            self.set_config(tpl)
 
     def _browse_icon(self):
         path = filedialog.askopenfilename(filetypes=[("Icon Files", "*.ico"), ("All Files", "*.*")])
