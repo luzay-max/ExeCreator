@@ -16,11 +16,13 @@
     "status_ready": "Ready",
     
     "sec_basic": "Basic Settings",
-    "sec_fake": "Disguise Settings",
+    "sec_target": "Target Settings",
+    "sec_disguise": "Disguise Settings",
     "sec_meta": "Metadata Settings (PE Info)",
     "sec_security": "Security Options",
     
     "lbl_template": "Select Template:",
+    "lbl_select_template": "--- Select Template ---",
     "lbl_target_exe": "Target Executable (e.g. GenshinImpact.exe):",
     "lbl_target_name": "Target Display Name:",
     "lbl_fallback_url": "Fallback URL (Optional):",
@@ -29,8 +31,9 @@
     "lbl_output_name": "Output Launcher Name:",
     "lbl_window_title": "Splash Window Title:",
     "lbl_icon_path": "Icon Path (.ico):",
-    "lbl_splash_path": "Splash Image (.png/.jpg):",
-    "lbl_target_size": "Target File Size (MB, 0 to disable):",
+    "lbl_splash_path": "Splash Image (.png/.gif):",
+    "lbl_target_size": "Target File Size (MB):",
+    "lbl_size_hint": "(0 to disable)",
     
     "lbl_meta_company": "Company Name:",
     "lbl_meta_desc": "File Description:",

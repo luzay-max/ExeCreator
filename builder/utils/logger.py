@@ -35,7 +35,7 @@ class Logger:
               console=True, file_path=None, log_format=None):
         """
         初始化日志系统
-        
+
         Args:
             name: 日志名称
             level: 日志级别

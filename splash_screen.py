@@ -10,7 +10,7 @@ import tkinter as tk
 def show_splash(duration=1500):
     """
     显示启动闪屏
-    
+
     Args:
         duration: 闪屏显示时长（毫秒）
     """

@@ -28,7 +28,8 @@ class HistoryManager:
 
         try:
             with open(self.history_file, 'r', encoding='utf-8') as f:
-                return json.load(f)
+                data = json.load(f)
+                return dict(data) if isinstance(data, dict) else {}
         except Exception as e:
             logger.warning(f"无法加载历史配置: {e}")
             return {}

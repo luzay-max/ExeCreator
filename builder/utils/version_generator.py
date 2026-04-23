@@ -14,7 +14,7 @@ logger = logging.getLogger(__name__)
 class VersionGenerator:
     """
     Windows PE版本信息生成器
-    
+
     生成符合Windows标准的版本信息文件
     """
 
@@ -62,7 +62,7 @@ VSVersionInfo(
         StringStruct(u'LegalTrademarks', u'{legal_trademarks}'),
         StringStruct(u'PrivateBuild', u'{private_build}'),
         StringStruct(u'SpecialBuild', u'{special_build}')])
-      ]), 
+      ]),
     VarFileInfo([VarStruct(u'Translation', [2052, 1200])])
   ]
 )
@@ -74,10 +74,10 @@ VSVersionInfo(
     def parse_version(self, version_str: str) -> Tuple[int, int, int, int]:
         """
         解析版本字符串
-        
+
         Args:
             version_str: 版本字符串（如 "1.0.0.0"）
-        
+
         Returns:
             Tuple[int, int, int, int]: 版本号元组
         """
@@ -90,7 +90,8 @@ VSVersionInfo(
             raise ValueError(f"版本号必须包含4个部分: {version_str}")
 
         try:
-            return tuple(int(p) for p in parts)
+            v = [int(p) for p in parts]
+            return (v[0], v[1], v[2], v[3])
         except ValueError:
             raise ValueError(f"版本号必须为数字: {version_str}")
 
@@ -111,7 +112,7 @@ VSVersionInfo(
     ) -> str:
         """
         生成版本信息文件内容
-        
+
         Args:
             file_version: 文件版本号
             product_version: 产品版本号
@@ -125,7 +126,7 @@ VSVersionInfo(
             private_build: 私有构建说明
             special_build: 特殊构建说明
             internal_name: 内部名称
-        
+
         Returns:
             str: 版本信息文件内容
         """
@@ -169,11 +170,11 @@ VSVersionInfo(
     ) -> bool:
         """
         生成并保存版本信息文件
-        
+
         Args:
             file_path: 输出文件路径
             **kwargs: 版本信息参数
-        
+
         Returns:
             bool: 是否成功
         """
@@ -200,11 +201,11 @@ VSVersionInfo(
     ) -> Dict[str, Any]:
         """
         创建默认配置
-        
+
         Args:
             output_name: 输出文件名
             version: 版本号
-        
+
         Returns:
             Dict: 配置字典
         """
@@ -225,10 +226,10 @@ VSVersionInfo(
     def format_size_for_display(size_bytes: int) -> str:
         """
         格式化文件大小显示
-        
+
         Args:
             size_bytes: 字节数
-        
+
         Returns:
             str: 格式化后的大小字符串
         """
@@ -243,7 +244,7 @@ VSVersionInfo(
 def generate_version_info(**kwargs) -> str:
     """
     便捷函数：生成版本信息
-    
+
     Returns:
         str: 版本信息文件内容
     """
@@ -254,11 +255,11 @@ def generate_version_info(**kwargs) -> str:
 def save_version_info(file_path: str, **kwargs) -> bool:
     """
     便捷函数：保存版本信息
-    
+
     Args:
         file_path: 输出文件路径
         **kwargs: 版本信息参数
-    
+
     Returns:
         bool: 是否成功
     """

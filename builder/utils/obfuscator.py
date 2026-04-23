@@ -220,9 +220,11 @@ class CodeObfuscator:
                     if j < len(lines):
                         doc_line = lines[j - 1].strip()
                         quote = None
-                        if doc_line.startswith('"""'): quote = '"""'
-                        elif doc_line.startswith("'''"): quote = "'''"
-                        
+                        if doc_line.startswith('"""'):
+                            quote = '"""'
+                        elif doc_line.startswith("'''"):
+                            quote = "'''"
+
                         if quote and doc_line.count(quote) < 2:
                             while j < len(lines) and quote not in lines[j]:
                                 result.append(lines[j])
@@ -281,7 +283,8 @@ class CodeObfuscator:
         # 用 word-boundary 替换（避免替换子串）
         def replacer(m: re.Match) -> str:
             word = m.group(0)
-            return self._rename_map.get(word, word)
+            res = self._rename_map.get(word, word)
+            return str(res)
 
         pattern = re.compile(
             r'\b(' + '|'.join(re.escape(k) for k in self._rename_map) + r')\b'
@@ -306,11 +309,12 @@ class CodeObfuscator:
             s = m.group(1)
             # 30% 概率替换，保持代码可读性，避免过度膨胀
             if self._rng.random() < 0.30:
-                return _encode_string(s)
-            return m.group(0)
+                res = _encode_string(s)
+                return str(res)
+            return str(m.group(0))
 
-        result = self._SHORT_STR_PATTERN.sub(maybe_encode, source)
-        return result
+        source = self._SHORT_STR_PATTERN.sub(maybe_encode, source)
+        return str(source)
 
 
 # ======================================================================= #

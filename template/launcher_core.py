@@ -217,22 +217,22 @@ class GameScanner:
         # 1. 缓存 + 自身嵌入数据（最快）
         result = self._cache_scanner.scan()
         if result:
-            self.found_path = result
-            return result
+            self.found_path = str(result)
+            return str(result)
 
         # 2. 注册表
         result = self._registry_scanner.scan()
         if result:
-            self.found_path = result
+            self.found_path = str(result)
             self._update_cache()
-            return result
+            return str(result)
 
         # 3. 常用路径 + 全盘扫描（最慢）
         result = self._drive_scanner.scan()
         if result:
-            self.found_path = result
+            self.found_path = str(result)
             self._update_cache()
-            return result
+            return str(result)
 
         return None
 

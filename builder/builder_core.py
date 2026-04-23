@@ -16,12 +16,16 @@ project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
 
-from builder.utils.file_inflator import FileInflator
+from builder.utils.file_inflator import FileInflator  # noqa: E402
 
 try:
-    from builder.utils.obfuscator import obfuscate_code
+    from builder.utils.obfuscator import obfuscate_code  # noqa: E402
 except ImportError:
-    from utils.obfuscator import obfuscate_code
+    try:
+        from utils.obfuscator import obfuscate_code  # type: ignore # noqa: E402
+    except ImportError:
+         def obfuscate_code(source: str, seed: int | None = None) -> str:
+             return source
 
 logger = logging.getLogger(__name__)
 
@@ -359,10 +363,11 @@ import base64
                 text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo
             )
 
-            for line in process.stdout:
-                line = line.strip()
-                if line:
-                    self._log(line)
+            if process.stdout:
+                for line in process.stdout:
+                    line = line.strip()
+                    if line:
+                        self._log(line)
             process.wait()
 
             if process.returncode != 0:
@@ -389,7 +394,7 @@ import base64
             self._log("清理临时文件...")
             try:
                 shutil.rmtree(build_dir)
-            except:
+            except Exception:
                 pass
 
             self._log("=" * 50)

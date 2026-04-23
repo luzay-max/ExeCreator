@@ -37,7 +37,8 @@ class CacheScanner(BaseScanner):
         if os.path.exists(self.cache_file):
             try:
                 with open(self.cache_file, 'r', encoding='utf-8') as f:
-                    return json.load(f)
+                    data = json.load(f)
+                    return dict(data) if isinstance(data, dict) else {}
             except (json.JSONDecodeError, OSError, ValueError):
                 return {}
         return {}
@@ -64,8 +65,9 @@ class CacheScanner(BaseScanner):
 
     def _scan_local_cache(self) -> Optional[str]:
         self.log("检查本地缓存记录...")
-        path = self.cache.get(self.target_exe.lower())
-        if path and os.path.exists(path):
+        val = self.cache.get(self.target_exe.lower())
+        if val and isinstance(val, str) and os.path.exists(val):
+            path: str = val
             self.log(f"在缓存中快速定位到: {path}")
             self.found_path = path
             return path

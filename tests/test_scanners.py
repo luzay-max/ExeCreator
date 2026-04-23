@@ -11,9 +11,9 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from template.scanner.base_scanner import BaseScanner
-from template.scanner.cache_scanner import CacheScanner
-from template.scanner.drive_scanner import DriveScanner
+from template.scanner.base_scanner import BaseScanner  # noqa: E402
+from template.scanner.cache_scanner import CacheScanner  # noqa: E402
+from template.scanner.drive_scanner import DriveScanner  # noqa: E402
 
 
 class TestBaseScanner:

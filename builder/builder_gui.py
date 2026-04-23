@@ -19,19 +19,27 @@ if _PROJECT_ROOT not in sys.path:
 if _THIS_DIR not in sys.path:
     sys.path.insert(0, _THIS_DIR)
 
-from builder_core import BuilderCore
-from history_manager import HistoryManager
-from widgets.config_panel import ConfigPanel
-from widgets.log_viewer import LogViewer
-try:
-    from builder.locale.i18n import t, set_lang, get_current_lang
-except ImportError:
-    from locale.i18n import t, set_lang, get_current_lang  # type: ignore
+from builder_core import BuilderCore  # noqa: E402
+from history_manager import HistoryManager  # noqa: E402
+from widgets.config_panel import ConfigPanel  # noqa: E402
+from widgets.log_viewer import LogViewer  # noqa: E402
 
 try:
-    from builder.utils.constants import VERSION, APP_NAME, APP_TITLE, LOG_FORMAT
+    from builder.locale.i18n import get_current_lang, set_lang, t  # noqa: E402
 except ImportError:
-    from utils.constants import VERSION, APP_NAME, APP_TITLE, LOG_FORMAT  # type: ignore, VERSION
+    from locale.i18n import get_current_lang, set_lang, t  # type: ignore # noqa: E402
+
+try:
+    from builder.utils.constants import APP_NAME, APP_TITLE, LOG_FORMAT, VERSION
+except ImportError:
+    try:
+        from utils.constants import APP_NAME, APP_TITLE, LOG_FORMAT, VERSION  # type: ignore
+    except ImportError:
+        # Fallback values if constants module is completely missing
+        APP_NAME = "PrankLauncherBuilder"
+        APP_TITLE = "Prank Launcher Builder v3.0"
+        LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+        VERSION = "3.0.0"
 
 logger = logging.getLogger(__name__)
 
@@ -132,7 +140,7 @@ class BuilderGUI:
             style.configure('TLabelframe', background='SystemButtonFace', foreground='black')
             style.configure('TLabelframe.Label', background='SystemButtonFace')
             self.log_viewer.log_text.config(bg='#f5f5f5', fg='black')
-        
+
         self.theme_btn.config(text=t("theme_light") if self.is_dark_theme else t("theme_dark"))
 
     def _toggle_lang(self):
@@ -179,7 +187,7 @@ class BuilderGUI:
                 messagebox.showinfo("Success", t("msg_generate_success").format(path=msg))
                 try:
                     subprocess.run(f'explorer /select,"{msg}"', shell=True)
-                except:
+                except Exception:
                     pass
             else:
                 messagebox.showerror("Error", t("msg_generate_error").format(error=msg))
@@ -199,7 +207,7 @@ def main():
             from utils.errors import install_global_handler
         except ImportError:
             install_global_handler = None
-    if install_global_handler:
+    if install_global_handler is not None:
         install_global_handler()
 
     try:

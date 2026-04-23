@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 def handle_errors(func):
     """
     错误处理装饰器
-    
+
     Usage:
         @handle_errors
         def my_function(self):
@@ -35,7 +35,7 @@ def handle_errors(func):
 def show_error_dialog(message, title="错误"):
     """
     显示错误对话框
-    
+
     Args:
         message: 错误信息
         title: 对话框标题
@@ -59,7 +59,7 @@ def show_error_dialog(message, title="错误"):
 def show_warning_dialog(message, title="警告"):
     """
     显示警告对话框
-    
+
     Args:
         message: 警告信息
         title: 对话框标题
@@ -76,7 +76,7 @@ def show_warning_dialog(message, title="警告"):
 def show_info_dialog(message, title="信息"):
     """
     显示信息对话框
-    
+
     Args:
         message: 信息内容
         title: 对话框标题
@@ -93,11 +93,11 @@ def show_info_dialog(message, title="信息"):
 def ask_yes_no(message, title="确认"):
     """
     显示是/否对话框
-    
+
     Args:
         message: 询问信息
         title: 对话框标题
-    
+
     Returns:
         bool: True 表示"是"，False 表示"否"
     """
@@ -197,7 +197,7 @@ class ScanError(BuildError):
 def install_global_handler():
     """
     安装全局未捕获异常处理器。
-    
+
     在主入口（如 builder_gui.py 的 main()）中调用一次即可。
     所有未被 try/except 捕获的异常都会被记录到日志 + 弹窗提示。
     """

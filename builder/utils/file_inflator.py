@@ -5,7 +5,7 @@
 """
 import logging
 import os
-from typing import Optional
+from typing import Callable, Optional
 
 from builder.utils.errors import FileOperationError
 
@@ -15,7 +15,7 @@ logger = logging.getLogger(__name__)
 class FileInflator:
     """
     文件膨胀器
-    
+
     通过向文件末尾追加数据来增加文件大小
     """
 
@@ -35,10 +35,10 @@ class FileInflator:
     def get_file_size(self, file_path: str) -> int:
         """
         获取文件大小（字节）
-        
+
         Args:
             file_path: 文件路径
-        
+
         Returns:
             int: 文件大小（字节）
         """
@@ -50,10 +50,10 @@ class FileInflator:
     def parse_size(self, size_str: str) -> int:
         """
         解析大小字符串
-        
+
         Args:
             size_str: 大小字符串（如 "10MB", "5KB", "1024"）
-        
+
         Returns:
             int: 大小（字节）
         """
@@ -81,16 +81,16 @@ class FileInflator:
         self,
         file_path: str,
         target_size_mb: float,
-        progress_callback: Optional[callable] = None
+        progress_callback: Optional[Callable[[int, int], None]] = None
     ) -> dict:
         """
         膨胀文件到指定大小
-        
+
         Args:
             file_path: 文件路径
             target_size_mb: 目标大小（MB）
             progress_callback: 进度回调函数 (current_bytes, total_bytes)
-        
+
         Returns:
             dict: 膨胀结果信息
         """
@@ -160,10 +160,10 @@ class FileInflator:
         """
         移除文件末尾的膨胀数据（如果知道原始大小）
         注意：此功能需要记录原始大小
-        
+
         Args:
             file_path: 文件路径
-        
+
         Returns:
             int: 移除的字节数
         """
@@ -174,7 +174,7 @@ class FileInflator:
     def get_inflate_info(self) -> dict:
         """
         获取最近一次膨胀操作的信息
-        
+
         Returns:
             dict: 膨胀信息
         """
@@ -188,34 +188,35 @@ class FileInflator:
     def format_size(size_bytes: int) -> str:
         """
         格式化文件大小为人类可读格式
-        
+
         Args:
             size_bytes: 大小（字节）
-        
+
         Returns:
             str: 格式化后的大小字符串
         """
+        size: float = float(size_bytes)
         for unit in ['B', 'KB', 'MB', 'GB']:
-            if size_bytes < 1024:
-                return f"{size_bytes:.2f} {unit}"
-            size_bytes /= 1024
+            if size < 1024:
+                return f"{size:.2f} {unit}"
+            size /= 1024
 
-        return f"{size_bytes:.2f} TB"
+        return f"{size:.2f} TB"
 
 
 def inflate_file(
     file_path: str,
     target_size_mb: float,
-    progress_callback: Optional[callable] = None
+    progress_callback: Optional[Callable[[int, int], None]] = None
 ) -> dict:
     """
     便捷函数：膨胀文件到指定大小
-    
+
     Args:
         file_path: 文件路径
         target_size_mb: 目标大小（MB）
         progress_callback: 进度回调函数
-    
+
     Returns:
         dict: 膨胀结果
     """

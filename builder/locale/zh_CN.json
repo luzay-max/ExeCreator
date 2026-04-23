@@ -16,11 +16,13 @@
     "status_ready": "准备就绪",
     
     "sec_basic": "基本设置",
-    "sec_fake": "伪装设置",
+    "sec_target": "目标程序设置",
+    "sec_disguise": "伪装设置",
     "sec_meta": "元数据设置 (PE信息)",
     "sec_security": "安全选项",
     
     "lbl_template": "选择预设模板:",
+    "lbl_select_template": "--- 选择模板快速填充 ---",
     "lbl_target_exe": "目标程序名称 (如 GenshinImpact.exe):",
     "lbl_target_name": "目标程序显示名称 (如 原神):",
     "lbl_fallback_url": "失败后跳转链接 (可选):",
@@ -29,8 +31,9 @@
     "lbl_output_name": "启动器伪装名称:",
     "lbl_window_title": "加载界面窗口标题:",
     "lbl_icon_path": "图标路径 (.ico):",
-    "lbl_splash_path": "加载界面图片 (.png/.jpg):",
-    "lbl_target_size": "目标膨胀大小 (MB, 0为不膨胀):",
+    "lbl_splash_path": "启动图 (.png/.gif可选):",
+    "lbl_target_size": "目标文件大小 (MB):",
+    "lbl_size_hint": "(0 表示不膨胀)",
     
     "lbl_meta_company": "公司名称:",
     "lbl_meta_desc": "文件描述:",

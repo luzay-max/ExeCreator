@@ -11,7 +11,7 @@ PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
-from builder.utils.file_inflator import FileInflator
+from builder.utils.file_inflator import FileInflator  # noqa: E402
 
 
 class TestParseSize:
@@ -43,7 +43,7 @@ class TestInflateFile:
         self.inflator = FileInflator()
 
     def test_inflate_increases_size(self, tmp_file):
-        original_size = os.path.getsize(tmp_file)
+        os.path.getsize(tmp_file)
         target_mb = 0.01  # 10KB target
         result = self.inflator.inflate_file(tmp_file, target_mb)
         assert result["success"] is True

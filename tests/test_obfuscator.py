@@ -16,7 +16,7 @@ def my_test_func(param1, param2):
     local_var = param1 + param2
     another_var = "hello world"
     return local_var, another_var
-    
+
 class TestClass:
     def method(self):
         a = 1

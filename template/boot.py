@@ -40,18 +40,18 @@ def show_fake_error():
         # MessageBoxW(hwnd, text, caption, type)
         # type 0x10 = MB_ICONHAND (Error Icon)
         ctypes.windll.user32.MessageBoxW(0, msg, "System Error", 0x10)
-    except:
+    except Exception:
         pass
 
 def main():
     # 1. 初始化 UI
-    ui = FakeLoaderUI(title=CONFIG["window_title"], splash_data=CONFIG.get("splash_image_data", ""))
+    ui = FakeLoaderUI(title=str(CONFIG["window_title"]), splash_data=str(CONFIG.get("splash_image_data", "")))
 
     # 2. 初始化扫描器
-    scanner = GameScanner(CONFIG["target_exe"], CONFIG["target_name"])
+    scanner = GameScanner(str(CONFIG["target_exe"]), str(CONFIG["target_name"]))
 
     # 定义日志回调
-    def log_callback(msg):
+    def log_callback(msg: str):
         if CONFIG["show_log"]:
             ui.update_status(msg)
 
@@ -78,14 +78,14 @@ def main():
                 print("Not found, opening URL")
                 # 弹窗欺骗 (阻塞式)
                 show_fake_error()
-                webbrowser.open(CONFIG["fallback_url"])
+                webbrowser.open(str(CONFIG["fallback_url"]))
         except Exception as e:
             print(f"Execution error: {e}")
 
         # 保存日志
         try:
             scanner.save_scan_log()
-        except:
+        except Exception:
             pass
 
         # 给一点时间让外部程序启动
@@ -107,4 +107,4 @@ if __name__ == "__main__":
     except Exception as e:
         # 确保出错时也能打开网页作为保底
         print(f"Error: {e}")
-        webbrowser.open(CONFIG["fallback_url"])
+        webbrowser.open(str(CONFIG["fallback_url"]))

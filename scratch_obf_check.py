@@ -1,9 +1,7 @@
-import re
 
 def test_junk(source):
     lines = source.split('\n')
     result = []
-    junk_counter = 0
     i = 0
     while i < len(lines):
         line = lines[i]

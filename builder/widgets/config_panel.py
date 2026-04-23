@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
 from tkinter import filedialog, ttk
-import os
 
 try:
     from builder.locale.i18n import t
@@ -98,37 +97,37 @@ class ConfigPanel(ttk.Frame):
         ttk.Label(icon_f, text=t("lbl_icon_path"), width=24).pack(side='left')
         self.icon_path_var = tk.StringVar()
         ttk.Entry(icon_f, textvariable=self.icon_path_var).pack(side='left', fill='x', expand=True, padx=5)
-        ttk.Button(icon_f, text="浏览...", command=self._browse_icon).pack(side='left')
+        ttk.Button(icon_f, text=t("btn_browse", "浏览..."), command=self._browse_icon).pack(side='left')
 
         # Splash 图像选择 (新增)
         splash_f = ttk.Frame(disguise_frame)
         splash_f.pack(fill='x', pady=5)
-        ttk.Label(splash_f, text="启动图 (.png/.gif可选):", width=24).pack(side='left')
+        ttk.Label(splash_f, text=t("lbl_splash_path"), width=24).pack(side='left')
         self.splash_path_var = tk.StringVar()
         ttk.Entry(splash_f, textvariable=self.splash_path_var).pack(side='left', fill='x', expand=True, padx=5)
-        ttk.Button(splash_f, text="浏览...", command=self._browse_splash).pack(side='left')
+        ttk.Button(splash_f, text=t("btn_browse", "浏览..."), command=self._browse_splash).pack(side='left')
 
         # 文件膨胀
         size_f = ttk.Frame(disguise_frame)
         size_f.pack(fill='x', pady=5)
-        ttk.Label(size_f, text="目标文件大小 (MB):", width=24).pack(side='left')
+        ttk.Label(size_f, text=t("lbl_target_size"), width=24).pack(side='left')
         self.target_size_var = tk.StringVar(value="10")
         ttk.Entry(size_f, textvariable=self.target_size_var, width=10).pack(side='left', padx=5)
-        ttk.Label(size_f, text="(0 表示不膨胀)").pack(side='left')
+        ttk.Label(size_f, text=t("lbl_size_hint")).pack(side='left')
 
         # 3. 元数据伪装
-        meta_frame = self._create_section("元数据伪装 (高级)")
-        self.meta_company = self._create_entry(meta_frame, "公司名称:", "Microsoft Corporation")
-        self.meta_desc = self._create_entry(meta_frame, "文件描述:", "Game Client")
-        self.meta_copyright = self._create_entry(meta_frame, "版权信息:", "© Microsoft Corporation. All rights reserved.")
-        self.meta_version = self._create_entry(meta_frame, "版本号 (X.X.X.X):", "1.0.0.1")
+        meta_frame = self._create_section(t("sec_meta"))
+        self.meta_company = self._create_entry(meta_frame, t("lbl_meta_company"), "Microsoft Corporation")
+        self.meta_desc = self._create_entry(meta_frame, t("lbl_meta_desc"), "Game Client")
+        self.meta_copyright = self._create_entry(meta_frame, t("lbl_meta_copyright"), "© Microsoft Corporation. All rights reserved.")
+        self.meta_version = self._create_entry(meta_frame, t("lbl_meta_version"), "1.0.0.1")
 
         # 4. 安全选项
-        sec_frame = self._create_section("安全选项")
+        sec_frame = self._create_section(t("sec_security"))
         self.enable_obfuscation_var = tk.BooleanVar(value=False)
         obf_cb = ttk.Checkbutton(
             sec_frame,
-            text="启用代码混淆 （随机化变量名 + 插入垃圾代码，降低杀软识别率）",
+            text=t("chk_obfuscation"),
             variable=self.enable_obfuscation_var
         )
         obf_cb.pack(anchor='w', pady=4)
@@ -148,7 +147,7 @@ class ConfigPanel(ttk.Frame):
         ttk.Entry(signtool_f, textvariable=self.signtool_path_var).pack(
             side='left', fill='x', expand=True, padx=5
         )
-        ttk.Button(signtool_f, text="浏览...", command=self._browse_signtool).pack(side='left')
+        ttk.Button(signtool_f, text=t("btn_browse", "浏览..."), command=self._browse_signtool).pack(side='left')
 
         cert_f = ttk.Frame(sec_frame)
         cert_f.pack(fill='x', pady=3)
@@ -157,7 +156,7 @@ class ConfigPanel(ttk.Frame):
         ttk.Entry(cert_f, textvariable=self.signing_cert_path_var).pack(
             side='left', fill='x', expand=True, padx=5
         )
-        ttk.Button(cert_f, text="浏览...", command=self._browse_signing_cert).pack(side='left')
+        ttk.Button(cert_f, text=t("btn_browse", "浏览..."), command=self._browse_signing_cert).pack(side='left')
 
         password_f = ttk.Frame(sec_frame)
         password_f.pack(fill='x', pady=3)

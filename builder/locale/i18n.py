@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-import os
 import json
 import logging
+import os
 
 logger = logging.getLogger(__name__)
 
@@ -33,18 +33,19 @@ class I18n:
         else:
             logger.warning(f"Language file not found: {file_path}, falling back to defaults")
 
-    def t(self, key: str, default: str = None) -> str:
+    def t(self, key: str, default: str | None = None) -> str:
         """Translate a key."""
-        return self.strings.get(key, default if default is not None else key)
+        val = self.strings.get(key, default if default is not None else key)
+        return str(val)
 
 # Global instance shortcut
 _i18n_instance = I18n()
 
-def t(key: str, default: str = None) -> str:
+def t(key: str, default: str | None = None) -> str:
     return _i18n_instance.t(key, default)
 
 def set_lang(lang_code: str):
     _i18n_instance.load_lang(lang_code)
 
 def get_current_lang() -> str:
-    return _i18n_instance.current_lang
+    return str(_i18n_instance.current_lang)
