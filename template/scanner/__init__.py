@@ -7,7 +7,7 @@
 """
 from .base_scanner import BaseScanner
 from .cache_scanner import CacheScanner
-from .registry_scanner import RegistryScanner
 from .drive_scanner import DriveScanner
+from .registry_scanner import RegistryScanner
 
 __all__ = ["BaseScanner", "CacheScanner", "RegistryScanner", "DriveScanner"]

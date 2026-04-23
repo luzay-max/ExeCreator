@@ -1,6 +1,6 @@
-import sys
 import json
 import os
+import sys
 
 MARKER = b'<<PROPAGATION_DATA>>'
 
@@ -12,19 +12,19 @@ def inspect_exe(file_path):
     try:
         with open(file_path, 'rb') as f:
             content = f.read()
-        
+
         parts = content.split(MARKER)
-        
+
         print(f"=== 分析文件: {os.path.basename(file_path)} ===")
         print(f"文件大小: {len(content) / 1024 / 1024:.2f} MB")
-        
+
         if len(parts) == 1:
             print("[-] 未发现传播数据标记 (这是原始生成的 EXE 吗？)")
             return
-            
-        print(f"[+] 发现传播数据标记！")
+
+        print("[+] 发现传播数据标记！")
         print(f"    数据段数量: {len(parts) - 1}")
-        
+
         last_part = parts[-1]
         try:
             # 尝试清理可能存在的空字节
@@ -32,17 +32,17 @@ def inspect_exe(file_path):
             if not json_str:
                 print("[-] 数据段为空")
                 return
-                
+
             data = json.loads(json_str)
             print("\n[+] 读取到的传播路径数据:")
             print(json.dumps(data, indent=4, ensure_ascii=False))
-            
+
         except json.JSONDecodeError:
             print("[-] 数据段不是有效的 JSON 格式")
             print(f"    原始内容片段: {last_part[:100]!r}...")
         except Exception as e:
             print(f"[-] 解析数据时出错: {e}")
-            
+
     except Exception as e:
         print(f"读取文件失败: {e}")
 

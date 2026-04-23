@@ -2,10 +2,10 @@
 启动闪屏模块
 在主程序启动时显示品牌闪屏
 """
-import tkinter as tk
-import threading
-import time
 import sys
+import threading
+import tkinter as tk
+
 
 def show_splash(duration=1500):
     """
@@ -15,15 +15,15 @@ def show_splash(duration=1500):
         duration: 闪屏显示时长（毫秒）
     """
     root = tk.Tk()
-    
+
     # 设置无边框、全屏、置顶
     root.overrideredirect(True)
     root.attributes('-topmost', True)
-    
+
     # 深色背景色
     bg_color = '#1a1a2e'
     root.configure(bg=bg_color)
-    
+
     # 居中显示
     screen_width = root.winfo_screenwidth()
     screen_height = root.winfo_screenheight()
@@ -31,7 +31,7 @@ def show_splash(duration=1500):
     x = (screen_width - width) // 2
     y = (screen_height - height) // 2
     root.geometry(f"{width}x{height}+{x}+{y}")
-    
+
     # 标题 - 使用大字体
     title_label = tk.Label(
         root,
@@ -41,7 +41,7 @@ def show_splash(duration=1500):
         fg='#ffffff'
     )
     title_label.pack(pady=(50, 15))
-    
+
     # 副标题
     subtitle_label = tk.Label(
         root,
@@ -51,11 +51,11 @@ def show_splash(duration=1500):
         fg='#888888'
     )
     subtitle_label.pack()
-    
+
     # 分隔线
     separator = tk.Frame(root, height=2, bg='#3a3a5e')
     separator.pack(fill='x', padx=40, pady=20)
-    
+
     # 版本号
     version_label = tk.Label(
         root,
@@ -65,7 +65,7 @@ def show_splash(duration=1500):
         fg='#666666'
     )
     version_label.pack(side=tk.BOTTOM, pady=(0, 15))
-    
+
     # 加载点动画
     dots_label = tk.Label(
         root,
@@ -75,7 +75,7 @@ def show_splash(duration=1500):
         fg='#4a9eff'
     )
     dots_label.pack(side=tk.BOTTOM, pady=(0, 5))
-    
+
     def animate_dots():
         """加载点动画"""
         current = dots_label.cget('text')
@@ -84,16 +84,16 @@ def show_splash(duration=1500):
         else:
             dots_label.config(text=current + '.')
         dots_label.after(500, animate_dots)
-    
+
     animate_dots()
-    
+
     # 更新窗口
     root.update()
-    
+
     # 延时后关闭
     def close_splash():
         root.destroy()
-    
+
     root.after(duration, close_splash)
     root.mainloop()
 

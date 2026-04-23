@@ -3,19 +3,24 @@
 Builder Core
 分离出来的核心打包逻辑，摆脱对 Tkinter GUI 的依赖
 """
+import logging
 import os
-import sys
+import re
 import shutil
 import subprocess
-import re
-import logging
+import sys
 
 # Ensure project root is in sys.path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if project_root not in sys.path:
     sys.path.insert(0, project_root)
-    
+
 from builder.utils.file_inflator import FileInflator
+
+try:
+    from builder.utils.obfuscator import obfuscate_code
+except ImportError:
+    from utils.obfuscator import obfuscate_code
 
 logger = logging.getLogger(__name__)
 
@@ -64,36 +69,36 @@ class BuilderCore:
             self._log("=" * 50)
             self._log("开始构建恶搞启动器...")
             self._log("=" * 50)
-            
+
             output_name = config.get("output_name", "output.exe")
             target_size_mb = float(config.get("target_size_mb", 0))
             icon_path = config.get("icon_path", "")
-            
+
             self._log(f"目标程序: {config.get('target_exe')} ({config.get('target_name')})")
             self._log(f"输出文件: {output_name}")
-            
+
             base_path, template_dir = self._get_project_paths()
             if not os.path.exists(template_dir):
                 raise FileNotFoundError(f"找不到模板目录: {template_dir}")
-                
+
             current_work_dir = os.getcwd()
             build_dir = os.path.join(current_work_dir, "temp_build_env")
             output_dir = os.path.join(current_work_dir, "output")
-            
+
             if os.path.exists(build_dir):
                 shutil.rmtree(build_dir)
             os.makedirs(build_dir)
             if not os.path.exists(output_dir):
                 os.makedirs(output_dir)
-                
+
             self._log(f"构建目录: {build_dir}")
-            
+
             # ============ 合并代码 ============
             self._log("正在合并代码模块...")
             fake_ui_code = self._read_template_file("fake_ui.py", template_dir)
             launcher_core_code = self._read_template_file("launcher_core.py", template_dir)
             boot_code = self._read_template_file("boot.py", template_dir)
-            
+
             # 读取 scanner 子模块
             scanner_dir = os.path.join(template_dir, "scanner")
             scanner_modules_code = ""
@@ -105,7 +110,7 @@ class BuilderCore:
                     mod_code = re.sub(r'from\s+\..*?import.*\n', '', mod_code)
                     scanner_modules_code += f"\n# --- Scanner Module: {mod_name} ---\n{mod_code}\n"
                     self._log(f"  已读取扫描器模块: {mod_name}")
-            
+
             # 移除 launcher_core 中的 scanner 包导入（合并后不需要）
             launcher_core_code = re.sub(
                 r'try:\s*\n\s*from scanner import.*?\n.*?pass\s*\n',
@@ -113,10 +118,10 @@ class BuilderCore:
                 launcher_core_code,
                 flags=re.DOTALL
             )
-            
+
             if 'if __name__ == "__main__":' in fake_ui_code:
                 fake_ui_code = fake_ui_code.split('if __name__ == "__main__":')[0]
-                
+
             runtime_config = {
                 "target_exe": config.get("target_exe", ""),
                 "target_name": config.get("target_name", ""),
@@ -126,7 +131,7 @@ class BuilderCore:
                 "splash_image_data": config.get("splash_image_data", ""),
                 "show_log": True
             }
-            
+
             config_str = "CONFIG = " + repr(runtime_config)
             boot_code = re.sub(
                 r"# --- CONFIG START ---.*# --- CONFIG END ---",
@@ -135,10 +140,10 @@ class BuilderCore:
                 flags=re.DOTALL
             )
             boot_code = re.sub(
-                r"# --- IMPORTS START ---.*# --- IMPORTS END ---", 
+                r"# --- IMPORTS START ---.*# --- IMPORTS END ---",
                 "", boot_code, flags=re.DOTALL
             )
-            
+
             final_code = f"""
 # === MERGED BUILD ===
 import os
@@ -171,12 +176,21 @@ import base64
 # --- Module: boot ---
 {boot_code}
 """
+            # ============ 代码混淆（可选） ============
+            if config.get("enable_obfuscation", False):
+                self._log("正在进行代码混淆...")
+                try:
+                    final_code = obfuscate_code(final_code)
+                    self._log("代码混淆完成")
+                except Exception as obf_err:
+                    self._log(f"警告: 代码混淆失败，将使用未混淆版本 ({obf_err})")
+
             boot_file = os.path.join(build_dir, "boot.py")
             with open(boot_file, "w", encoding="utf-8") as f:
                 f.write(final_code)
-                
+
             self._log("代码合并完成")
-            
+
             # ============ 生成版本信息 ============
             version_file_path = None
             try:
@@ -184,7 +198,7 @@ import base64
                 if not re.match(r'^\d+\.\d+\.\d+\.\d+$', version_str):
                     version_str = "1.0.0.0"
                 version_tuple = tuple(map(int, version_str.split('.')))
-                
+
                 ver_template = self._read_template_file("version_info_template.txt", template_dir)
                 ver_content = ver_template.format(
                     file_version_tuple=version_tuple,
@@ -198,14 +212,14 @@ import base64
                     product_name=config.get("meta_desc", ""),
                     product_version=version_str
                 )
-                
+
                 version_file_path = os.path.join(build_dir, "version_info.txt")
                 with open(version_file_path, "w", encoding="utf-8") as f:
                     f.write(ver_content)
                 self._log("版本信息已生成")
             except Exception as e:
                 self._log(f"警告: 生成版本信息失败，将跳过元数据伪装 ({e})")
-                
+
             # ============ PyInstaller 打包 ============
             self._log("正在打包 (这可能需要几分钟)...")
             try:
@@ -219,9 +233,17 @@ import base64
                     pyinstaller_cmd = [local_py, "-m", "PyInstaller"]
                 else:
                     raise RuntimeError("未检测到 PyInstaller，请安装。")
-            
+
             cmd = pyinstaller_cmd + [
                 "--onefile", "--clean", "--noconsole",
+                "--noupx", # 禁用 UPX 压缩以提升启动解压速度
+                "--exclude-module", "numpy",
+                "--exclude-module", "pandas",
+                "--exclude-module", "matplotlib",
+                "--exclude-module", "PyQt5",
+                "--exclude-module", "PySide2",
+                "--exclude-module", "IPython",
+                "--exclude-module", "scipy",
                 "--collect-all", "tkinter",
                 "--name", os.path.splitext(output_name)[0],
                 "--distpath", output_dir,
@@ -229,34 +251,34 @@ import base64
                 "--specpath", build_dir,
                 boot_file
             ]
-            
+
             if version_file_path and os.path.exists(version_file_path):
                 cmd.extend(["--version-file", version_file_path])
             if icon_path and os.path.exists(icon_path):
                 cmd.extend(["--icon", icon_path])
-                
+
             startupinfo = None
             if os.name == 'nt':
                 startupinfo = subprocess.STARTUPINFO()
                 startupinfo.dwFlags |= subprocess.STARTF_USESHOWWINDOW
-                
+
             process = subprocess.Popen(
                 cmd, cwd=build_dir, stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding='utf-8', errors='replace', startupinfo=startupinfo
             )
-            
+
             for line in process.stdout:
                 line = line.strip()
                 if line:
                     self._log(line)
             process.wait()
-            
+
             if process.returncode != 0:
                 raise RuntimeError("打包失败，请检查 PyInstaller 是否正确安装")
-                
+
             exe_path = os.path.join(output_dir, output_name)
             self._log(f"打包完成: {exe_path}")
-            
+
             # ============ 文件膨胀 ============
             if target_size_mb > 0:
                 self._log(f"正在执行文件膨胀 ({target_size_mb} MB)...")
@@ -267,20 +289,20 @@ import base64
                     self._log(f"警告: 文件膨胀返回: {res.get('message')}")
                 else:
                     self._log(f"文件膨胀完成! {res.get('message')}")
-            
+
             # ============ 清理 ============
             self._log("清理临时文件...")
             try:
                 shutil.rmtree(build_dir)
             except:
                 pass
-            
+
             self._log("=" * 50)
             self._log("🎉 全部完成！")
             self._log("=" * 50)
-            
+
             return True, exe_path
-            
+
         except Exception as e:
             error_msg = str(e)
             self._log(f"错误: {error_msg}")

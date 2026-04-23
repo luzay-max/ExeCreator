@@ -7,25 +7,20 @@ v3.1 改进：
 - GameScanner 作为编排层，按优先级调度各子扫描器。
 - SelfUpdater / PathCache 保持不变。
 """
-import os
 import atexit
-import winreg
 import ctypes
-import sys
-import threading
-import time
-import json
 import datetime
-import concurrent.futures
-from pathlib import Path
-from typing import Optional, List, Set, Callable
+import json
+import os
+import sys
+from typing import Callable, List, Optional, Set
 
 # ======================================================================= #
 #  在合并打包时，scanner/ 子包的代码会被内联到此文件中。
 #  开发环境下使用相对导入。
 # ======================================================================= #
 try:
-    from scanner import CacheScanner, RegistryScanner, DriveScanner
+    from scanner import CacheScanner, DriveScanner, RegistryScanner
 except ImportError:
     # 合并打包后这些类已经在同一文件中，无需导入
     pass

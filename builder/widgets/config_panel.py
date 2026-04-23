@@ -1,6 +1,13 @@
 # -*- coding: utf-8 -*-
 import tkinter as tk
-from tkinter import ttk, filedialog
+from tkinter import filedialog, ttk
+import os
+
+try:
+    from builder.locale.i18n import t
+except ImportError:
+    from locale.i18n import t  # type: ignore
+
 
 class ConfigPanel(ttk.Frame):
     def __init__(self, parent):
@@ -8,7 +15,7 @@ class ConfigPanel(ttk.Frame):
         self.pack(fill=tk.BOTH, expand=True)
         self._init_templates()
         self._setup_ui()
-        
+
     def _init_templates(self):
         self.templates = {
             "原神 (Genshin Impact)": {
@@ -47,12 +54,12 @@ class ConfigPanel(ttk.Frame):
                 "window_title": "Updating Steam..."
             }
         }
-        
+
     def _create_section(self, title):
         frame = ttk.LabelFrame(self, text=title, padding="10")
         frame.pack(fill='x', pady=5)
         return frame
-        
+
     def _create_entry(self, parent, label_text, default_value, **kwargs):
         frame = ttk.Frame(parent)
         frame.pack(fill='x', pady=3)
@@ -66,29 +73,29 @@ class ConfigPanel(ttk.Frame):
         # 0. 快速模板选择
         tpl_frame = ttk.Frame(self)
         tpl_frame.pack(fill='x', pady=5)
-        ttk.Label(tpl_frame, text="快速模板预设:").pack(side='left')
+        ttk.Label(tpl_frame, text=t("lbl_template")).pack(side='left')
         self.template_combo = ttk.Combobox(tpl_frame, state='readonly', values=list(self.templates.keys()))
-        self.template_combo.set("--- 请选择快速模板 ---")
+        self.template_combo.set(t("lbl_select_template"))
         self.template_combo.pack(side='left', fill='x', expand=True, padx=5)
         self.template_combo.bind("<<ComboboxSelected>>", self._on_template_selected)
 
         # 1. 目标程序设置
-        target_frame = self._create_section("目标程序设置")
-        self.target_exe = self._create_entry(target_frame, "目标进程名 (如 YuanShen.exe):", "YuanShen.exe")
-        self.target_name = self._create_entry(target_frame, "程序描述 (如 原神):", "原神")
-        self.fallback_url = self._create_entry(target_frame, "失败跳转网址:", "https://ys.mihoyo.com")
-        self.error_message = self._create_entry(target_frame, "伪造报错内容 (空则不弹窗):", 
+        target_frame = self._create_section(t("sec_target"))
+        self.target_exe = self._create_entry(target_frame, t("lbl_target_exe"), "YuanShen.exe")
+        self.target_name = self._create_entry(target_frame, t("lbl_target_name"), "原神")
+        self.fallback_url = self._create_entry(target_frame, t("lbl_fallback_url"), "https://ys.mihoyo.com")
+        self.error_message = self._create_entry(target_frame, t("lbl_error_msg"),
                                                "无法定位程序输入点于动态链接库 Kernel32.dll。")
-        
+
         # 2. 伪装设置
-        disguise_frame = self._create_section("伪装设置")
-        self.output_name = self._create_entry(disguise_frame, "生成文件名 (如 game.exe):", "植物大战僵尸3.exe")
-        self.window_title = self._create_entry(disguise_frame, "伪装窗口标题:", "正在加载游戏资源...")
-        
+        disguise_frame = self._create_section(t("sec_disguise"))
+        self.output_name = self._create_entry(disguise_frame, t("lbl_output_name"), "植物大战僵尸3.exe")
+        self.window_title = self._create_entry(disguise_frame, t("lbl_window_title"), "正在加载游戏资源...")
+
         # 图标选择
         icon_f = ttk.Frame(disguise_frame)
         icon_f.pack(fill='x', pady=5)
-        ttk.Label(icon_f, text="图标文件 (.ico):", width=24).pack(side='left')
+        ttk.Label(icon_f, text=t("lbl_icon_path"), width=24).pack(side='left')
         self.icon_path_var = tk.StringVar()
         ttk.Entry(icon_f, textvariable=self.icon_path_var).pack(side='left', fill='x', expand=True, padx=5)
         ttk.Button(icon_f, text="浏览...", command=self._browse_icon).pack(side='left')
@@ -100,7 +107,7 @@ class ConfigPanel(ttk.Frame):
         self.splash_path_var = tk.StringVar()
         ttk.Entry(splash_f, textvariable=self.splash_path_var).pack(side='left', fill='x', expand=True, padx=5)
         ttk.Button(splash_f, text="浏览...", command=self._browse_splash).pack(side='left')
-        
+
         # 文件膨胀
         size_f = ttk.Frame(disguise_frame)
         size_f.pack(fill='x', pady=5)
@@ -108,13 +115,23 @@ class ConfigPanel(ttk.Frame):
         self.target_size_var = tk.StringVar(value="10")
         ttk.Entry(size_f, textvariable=self.target_size_var, width=10).pack(side='left', padx=5)
         ttk.Label(size_f, text="(0 表示不膨胀)").pack(side='left')
-        
+
         # 3. 元数据伪装
         meta_frame = self._create_section("元数据伪装 (高级)")
         self.meta_company = self._create_entry(meta_frame, "公司名称:", "Microsoft Corporation")
         self.meta_desc = self._create_entry(meta_frame, "文件描述:", "Game Client")
         self.meta_copyright = self._create_entry(meta_frame, "版权信息:", "© Microsoft Corporation. All rights reserved.")
         self.meta_version = self._create_entry(meta_frame, "版本号 (X.X.X.X):", "1.0.0.1")
+
+        # 4. 安全选项
+        sec_frame = self._create_section("安全选项")
+        self.enable_obfuscation_var = tk.BooleanVar(value=False)
+        obf_cb = ttk.Checkbutton(
+            sec_frame,
+            text="启用代码混淆 （随机化变量名 + 插入垃圾代码，降低杀软识别率）",
+            variable=self.enable_obfuscation_var
+        )
+        obf_cb.pack(anchor='w', pady=4)
 
     def _on_template_selected(self, event):
         selected = self.template_combo.get()
@@ -142,7 +159,7 @@ class ConfigPanel(ttk.Frame):
                 import base64
                 with open(splash_p, "rb") as bf:
                     splash_data = base64.b64encode(bf.read()).decode("utf-8")
-            except Exception as e:
+            except Exception:
                 pass # Ignore error
 
         return {
@@ -159,7 +176,8 @@ class ConfigPanel(ttk.Frame):
             "meta_company": self.meta_company.get().strip(),
             "meta_desc": self.meta_desc.get().strip(),
             "meta_copyright": self.meta_copyright.get().strip(),
-            "meta_version": self.meta_version.get().strip()
+            "meta_version": self.meta_version.get().strip(),
+            "enable_obfuscation": self.enable_obfuscation_var.get(),
         }
 
     def set_config(self, cfg: dict):
@@ -174,6 +192,8 @@ class ConfigPanel(ttk.Frame):
                 self.icon_path_var.set(v)
             elif k == "splash_path":
                 self.splash_path_var.set(v)
+            elif k == "enable_obfuscation":
+                self.enable_obfuscation_var.set(bool(v))
             elif hasattr(self, k) and isinstance(getattr(self, k), ttk.Entry):
                 entry = getattr(self, k)
                 entry.delete(0, tk.END)

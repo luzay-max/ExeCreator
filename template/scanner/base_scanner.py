@@ -4,10 +4,10 @@
 
 所有具体扫描器（注册表、驱动器、缓存等）均继承此类。
 """
+import datetime
 import os
 import threading
-import datetime
-from typing import Optional, Callable, List, Set
+from typing import Callable, List, Optional, Set
 
 
 class BaseScanner:

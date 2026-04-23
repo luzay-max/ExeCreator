@@ -4,8 +4,8 @@ conftest.py — pytest 全局 fixture 配置
 """
 import os
 import sys
+
 import pytest
-import tempfile
 
 # 确保项目根目录在 sys.path
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))

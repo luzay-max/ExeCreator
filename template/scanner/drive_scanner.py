@@ -4,10 +4,11 @@
 
 v3.0: 使用 ThreadPoolExecutor 并发扫描，threading.Event 实现 "一处发现，全盘停止"。
 """
-import os
 import concurrent.futures
+import os
 from pathlib import Path
-from typing import Optional, List
+from typing import List, Optional
+
 from .base_scanner import BaseScanner
 
 

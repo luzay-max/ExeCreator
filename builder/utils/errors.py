@@ -3,11 +3,11 @@
 错误处理模块
 提供统一的错误处理和用户友好的错误提示
 """
-import sys
-import traceback
-import tkinter as tk
-from tkinter import messagebox
 import logging
+import sys
+import tkinter as tk
+import traceback
+from tkinter import messagebox
 
 logger = logging.getLogger(__name__)
 
@@ -44,10 +44,10 @@ def show_error_dialog(message, title="错误"):
         # 隐藏主窗口
         root = tk.Tk()
         root.withdraw()
-        
+
         # 显示错误消息
         messagebox.showerror(title, message)
-        
+
         # 清理
         root.destroy()
     except Exception as e:
@@ -117,7 +117,7 @@ def ask_yes_no(message, title="确认"):
 
 class BuildError(Exception):
     """打包错误基类"""
-    
+
     def __init__(self, message, details=None):
         super().__init__(message)
         self.message = message
@@ -125,7 +125,7 @@ class BuildError(Exception):
         logger.error(f"BuildError: {message}")
         if details:
             logger.error(f"详细信息: {details}")
-    
+
     def __str__(self):
         if self.details:
             return f"{self.message}\n\n详细信息: {self.details}"
@@ -134,7 +134,7 @@ class BuildError(Exception):
 
 class MissingDependencyError(BuildError):
     """缺少依赖错误"""
-    
+
     def __init__(self, dependency_name, suggestion=None):
         message = f"缺少必要的依赖: {dependency_name}"
         details = suggestion or f"请安装 {dependency_name} 后再试"
@@ -143,7 +143,7 @@ class MissingDependencyError(BuildError):
 
 class InvalidConfigError(BuildError):
     """配置错误"""
-    
+
     def __init__(self, config_name, reason=None):
         message = f"配置无效: {config_name}"
         details = reason or f"{config_name} 的配置不正确，请检查"
@@ -152,7 +152,7 @@ class InvalidConfigError(BuildError):
 
 class TemplateNotFoundError(BuildError):
     """模板文件未找到"""
-    
+
     def __init__(self, template_path):
         message = f"模板文件未找到: {template_path}"
         super().__init__(message, "请确保 template 目录存在于程序目录下")
@@ -160,14 +160,14 @@ class TemplateNotFoundError(BuildError):
 
 class BuildCancelledError(BuildError):
     """打包被用户取消"""
-    
+
     def __init__(self):
         super().__init__("打包已取消", "用户取消了打包操作")
 
 
 class PyInstallerError(BuildError):
     """PyInstaller 打包错误"""
-    
+
     def __init__(self, return_code, output=None):
         message = f"PyInstaller 打包失败 (返回码: {return_code})"
         details = output or "请检查控制台输出获取详细信息"
@@ -176,7 +176,7 @@ class PyInstallerError(BuildError):
 
 class FileOperationError(BuildError):
     """文件操作错误"""
-    
+
     def __init__(self, operation, file_path, reason=None):
         message = f"文件操作失败: {operation} - {file_path}"
         details = reason or f"无法完成文件操作: {operation}"
@@ -185,7 +185,7 @@ class FileOperationError(BuildError):
 
 class ScanError(BuildError):
     """扫描过程错误"""
-    
+
     def __init__(self, scanner_name, reason=None):
         message = f"扫描失败: {scanner_name}"
         details = reason or "扫描过程中发生未知错误"
@@ -205,10 +205,10 @@ def install_global_handler():
         if issubclass(exc_type, KeyboardInterrupt):
             sys.__excepthook__(exc_type, exc_value, exc_tb)
             return
-        
+
         error_msg = "".join(traceback.format_exception(exc_type, exc_value, exc_tb))
         logger.critical(f"未捕获的异常:\n{error_msg}")
-        
+
         try:
             show_error_dialog(
                 f"程序发生了未预期的错误:\n\n{exc_value}\n\n"
@@ -217,6 +217,6 @@ def install_global_handler():
             )
         except Exception:
             print(f"致命错误: {error_msg}")
-    
+
     sys.excepthook = _global_excepthook
 

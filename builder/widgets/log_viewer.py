@@ -2,14 +2,15 @@
 import tkinter as tk
 from tkinter import ttk
 
+
 class LogViewer(ttk.Frame):
     def __init__(self, parent):
         super().__init__(parent)
         self.pack(fill=tk.BOTH, expand=True)
         self._setup_ui()
-        
+
     def _setup_ui(self):
-        self.log_text = tk.Text(self, height=10, state='disabled', 
+        self.log_text = tk.Text(self, height=10, state='disabled',
                                font=("Consolas", 9), background='#f5f5f5')
         self.log_text.pack(fill='both', expand=True, pady=(0, 10))
 

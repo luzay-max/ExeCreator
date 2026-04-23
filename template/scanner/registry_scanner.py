@@ -4,6 +4,7 @@
 """
 import winreg
 from typing import Optional
+
 from .base_scanner import BaseScanner
 
 

@@ -4,7 +4,6 @@ test_config_panel.py — ConfigPanel 配置读取测试
 """
 import os
 import sys
-import pytest
 
 PROJECT_ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if PROJECT_ROOT not in sys.path:

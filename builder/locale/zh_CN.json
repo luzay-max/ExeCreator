@@ -1,0 +1,55 @@
+{
+    "menu_file": "文件",
+    "menu_load_config": "加载配置",
+    "menu_save_config": "保存配置",
+    "menu_language": "语言 / Language",
+    "menu_exit": "退出",
+    "menu_help": "帮助",
+    "menu_about": "关于",
+    
+    "theme_dark": "深色模式",
+    "theme_light": "浅色模式",
+    
+    "btn_preview": "预览加载界面",
+    "btn_generate": "开始生成",
+    
+    "status_ready": "准备就绪",
+    
+    "sec_basic": "基本设置",
+    "sec_fake": "伪装设置",
+    "sec_meta": "元数据设置 (PE信息)",
+    "sec_security": "安全选项",
+    
+    "lbl_template": "选择预设模板:",
+    "lbl_target_exe": "目标程序名称 (如 GenshinImpact.exe):",
+    "lbl_target_name": "目标程序显示名称 (如 原神):",
+    "lbl_fallback_url": "失败后跳转链接 (可选):",
+    "lbl_error_msg": "假报错提示信息:",
+    
+    "lbl_output_name": "启动器伪装名称:",
+    "lbl_window_title": "加载界面窗口标题:",
+    "lbl_icon_path": "图标路径 (.ico):",
+    "lbl_splash_path": "加载界面图片 (.png/.jpg):",
+    "lbl_target_size": "目标膨胀大小 (MB, 0为不膨胀):",
+    
+    "lbl_meta_company": "公司名称:",
+    "lbl_meta_desc": "文件描述:",
+    "lbl_meta_copyright": "版权信息:",
+    "lbl_meta_version": "版本号 (X.X.X.X):",
+    
+    "chk_obfuscation": "启用代码混淆 （随机化变量名 + 插入垃圾代码，降低杀软识别率）",
+    
+    "btn_browse": "浏览",
+    
+    "msg_confirm_exit": "确定要退出程序吗？",
+    "msg_confirm_exit_title": "退出确认",
+    "msg_about_title": "关于",
+    "msg_about_text": "恶搞启动器生成工具\n版本 {version}\n作者：Max\n\n仅供学习和娱乐使用，请勿用于非法用途！",
+    
+    "msg_generate_success": "生成成功！\n文件保存在: {path}",
+    "msg_generate_error": "生成失败:\n{error}",
+    "msg_preview_warn": "预览界面将在 3 秒后自动关闭\n(或点击界面任意位置关闭)",
+    
+    "log_started": "启动器构建任务开始...",
+    "log_finished": "构建完成！"
+}

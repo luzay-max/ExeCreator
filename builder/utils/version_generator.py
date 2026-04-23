@@ -3,11 +3,10 @@
 版本信息生成器模块
 用于生成Windows可执行文件的版本信息
 """
+import logging
 import os
 import re
-import logging
-from typing import Tuple, Optional, Dict, Any
-from pathlib import Path
+from typing import Any, Dict, Tuple
 
 logger = logging.getLogger(__name__)
 
@@ -18,7 +17,7 @@ class VersionGenerator:
     
     生成符合Windows标准的版本信息文件
     """
-    
+
     # 版本信息模板
     VERSION_TEMPLATE = '''# UTF-8
 #
@@ -68,10 +67,10 @@ VSVersionInfo(
   ]
 )
 '''
-    
+
     def __init__(self):
         pass
-    
+
     def parse_version(self, version_str: str) -> Tuple[int, int, int, int]:
         """
         解析版本字符串
@@ -85,16 +84,16 @@ VSVersionInfo(
         # 验证版本格式
         if not re.match(r'^\d+\.\d+\.\d+\.\d+$', version_str):
             raise ValueError(f"无效的版本格式: {version_str}，应为 X.X.X.X 格式")
-        
+
         parts = version_str.split('.')
         if len(parts) != 4:
             raise ValueError(f"版本号必须包含4个部分: {version_str}")
-        
+
         try:
             return tuple(int(p) for p in parts)
         except ValueError:
             raise ValueError(f"版本号必须为数字: {version_str}")
-    
+
     def generate_version_info(
         self,
         file_version: str = "1.0.0.0",
@@ -133,14 +132,14 @@ VSVersionInfo(
         # 解析版本号
         file_version_tuple = self.parse_version(file_version)
         product_version_tuple = self.parse_version(product_version)
-        
+
         # 使用内部名称或产品名称
         internal_name = internal_name or product_name
-        
+
         # 格式化版本字符串（去掉最后一个数字）
         file_ver_str = '.'.join(str(v) for v in file_version_tuple[:-1])
         product_ver_str = '.'.join(str(v) for v in product_version_tuple[:-1])
-        
+
         # 填充模板
         content = self.VERSION_TEMPLATE.format(
             file_version_tuple=file_version_tuple,
@@ -158,11 +157,11 @@ VSVersionInfo(
             private_build=private_build or '',
             special_build=special_build or ''
         )
-        
+
         logger.info(f"生成版本信息文件: file_version={file_version}, product_version={product_version}")
-        
+
         return content
-    
+
     def save_version_info(
         self,
         file_path: str,
@@ -180,20 +179,20 @@ VSVersionInfo(
         """
         try:
             content = self.generate_version_info(**kwargs)
-            
+
             # 确保目录存在
             os.makedirs(os.path.dirname(file_path), exist_ok=True)
-            
+
             with open(file_path, 'w', encoding='utf-8') as f:
                 f.write(content)
-            
+
             logger.info(f"版本信息已保存到: {file_path}")
             return True
-            
+
         except Exception as e:
             logger.error(f"保存版本信息失败: {e}")
             return False
-    
+
     @staticmethod
     def create_default_config(
         output_name: str,
@@ -210,7 +209,7 @@ VSVersionInfo(
             Dict: 配置字典
         """
         name_without_ext = os.path.splitext(output_name)[0]
-        
+
         return {
             'file_version': version,
             'product_version': version,
@@ -221,7 +220,7 @@ VSVersionInfo(
             'product_name': name_without_ext,
             'internal_name': name_without_ext,
         }
-    
+
     @staticmethod
     def format_size_for_display(size_bytes: int) -> str:
         """

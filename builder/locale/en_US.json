@@ -1,0 +1,55 @@
+{
+    "menu_file": "File",
+    "menu_load_config": "Load Config",
+    "menu_save_config": "Save Config",
+    "menu_language": "Language / 语言",
+    "menu_exit": "Exit",
+    "menu_help": "Help",
+    "menu_about": "About",
+    
+    "theme_dark": "Dark Mode",
+    "theme_light": "Light Mode",
+    
+    "btn_preview": "Preview Splash",
+    "btn_generate": "Build Launcher",
+    
+    "status_ready": "Ready",
+    
+    "sec_basic": "Basic Settings",
+    "sec_fake": "Disguise Settings",
+    "sec_meta": "Metadata Settings (PE Info)",
+    "sec_security": "Security Options",
+    
+    "lbl_template": "Select Template:",
+    "lbl_target_exe": "Target Executable (e.g. GenshinImpact.exe):",
+    "lbl_target_name": "Target Display Name:",
+    "lbl_fallback_url": "Fallback URL (Optional):",
+    "lbl_error_msg": "Fake Error Message:",
+    
+    "lbl_output_name": "Output Launcher Name:",
+    "lbl_window_title": "Splash Window Title:",
+    "lbl_icon_path": "Icon Path (.ico):",
+    "lbl_splash_path": "Splash Image (.png/.jpg):",
+    "lbl_target_size": "Target File Size (MB, 0 to disable):",
+    
+    "lbl_meta_company": "Company Name:",
+    "lbl_meta_desc": "File Description:",
+    "lbl_meta_copyright": "Copyright Info:",
+    "lbl_meta_version": "Version (X.X.X.X):",
+    
+    "chk_obfuscation": "Enable Code Obfuscation (Randomize vars + junk code to evade AV)",
+    
+    "btn_browse": "Browse",
+    
+    "msg_confirm_exit": "Are you sure you want to exit?",
+    "msg_confirm_exit_title": "Confirm Exit",
+    "msg_about_title": "About",
+    "msg_about_text": "Prank Launcher Builder\nVersion {version}\nAuthor: Max\n\nFor educational and entertainment purposes only!",
+    
+    "msg_generate_success": "Build successful!\nSaved to: {path}",
+    "msg_generate_error": "Build failed:\n{error}",
+    "msg_preview_warn": "Preview will close automatically in 3 seconds\n(Or click anywhere to close)",
+    
+    "log_started": "Starting build process...",
+    "log_finished": "Build completed!"
+}

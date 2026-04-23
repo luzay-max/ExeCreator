@@ -4,10 +4,10 @@
 
 这是最高优先级的扫描策略，命中则零延迟。
 """
-import os
 import json
-import sys
-from typing import Optional, List
+import os
+from typing import List, Optional
+
 from .base_scanner import BaseScanner
 
 
