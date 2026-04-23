@@ -43,3 +43,25 @@ class TestHistoryManager:
         mgr.history_file = str(bad_file)
         result = mgr.load_history()
         assert result == {}
+
+    def test_save_history_removes_sensitive_and_large_runtime_fields(self, tmp_path):
+        hf = str(tmp_path / "test_history.json")
+        mgr = HistoryManager(history_file="test_history.json")
+        mgr.history_file = hf
+
+        config = {
+            "target_exe": "test.exe",
+            "signing_password": "secret",
+            "splash_image_data": "base64-data",
+            "timestamp_url": "http://timestamp.digicert.com",
+        }
+        mgr.save_history(config)
+
+        mgr2 = HistoryManager()
+        mgr2.history_file = hf
+        loaded = mgr2.load_history()
+
+        assert loaded["target_exe"] == "test.exe"
+        assert loaded["timestamp_url"] == "http://timestamp.digicert.com"
+        assert "signing_password" not in loaded
+        assert "splash_image_data" not in loaded

@@ -9,6 +9,7 @@ import re
 import shutil
 import subprocess
 import sys
+from glob import glob
 
 # Ensure project root is in sys.path
 project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -59,6 +60,97 @@ class BuilderCore:
             raise FileNotFoundError(f"模板文件不存在: {filepath}")
         with open(filepath, 'r', encoding='utf-8') as f:
             return f.read()
+
+    def _resolve_signtool_path(self, configured_path: str) -> str:
+        """优先使用显式配置，否则自动搜索系统中的 SignTool。"""
+        if configured_path:
+            if os.path.exists(configured_path):
+                return configured_path
+            raise FileNotFoundError(f"找不到 SignTool: {configured_path}")
+
+        detected = shutil.which("signtool.exe") or shutil.which("signtool")
+        if detected:
+            return detected
+
+        search_roots = [
+            os.path.join(os.environ.get("ProgramFiles(x86)", ""), "Windows Kits", "10", "bin"),
+            os.path.join(os.environ.get("ProgramFiles", ""), "Windows Kits", "10", "bin"),
+        ]
+        candidates: list[str] = []
+        for root in search_roots:
+            if not root or not os.path.isdir(root):
+                continue
+            candidates.extend(glob(os.path.join(root, "*", "x64", "signtool.exe")))
+            candidates.extend(glob(os.path.join(root, "*", "x86", "signtool.exe")))
+
+        if candidates:
+            return sorted(candidates, reverse=True)[0]
+
+        raise FileNotFoundError("未找到 SignTool，请安装 Windows SDK 或在界面中手动指定 signtool.exe 路径。")
+
+    def _sign_output(self, exe_path: str, config: dict) -> None:
+        """对最终产物执行可选的 Authenticode 签名。"""
+        if not config.get("enable_signing", False):
+            return
+
+        cert_path = str(config.get("signing_cert_path", "")).strip()
+        if not cert_path:
+            raise ValueError("已启用代码签名，但未提供 PFX 证书路径。")
+        if not os.path.exists(cert_path):
+            raise FileNotFoundError(f"找不到签名证书: {cert_path}")
+
+        signtool_path = self._resolve_signtool_path(str(config.get("signtool_path", "")).strip())
+        timestamp_url = str(config.get("timestamp_url", "")).strip()
+        signing_password = str(config.get("signing_password", ""))
+
+        cmd = [
+            signtool_path,
+            "sign",
+            "/fd",
+            "SHA256",
+            "/f",
+            cert_path,
+        ]
+        if signing_password:
+            cmd.extend(["/p", signing_password])
+        if timestamp_url:
+            cmd.extend(["/tr", timestamp_url, "/td", "SHA256"])
+        cmd.append(exe_path)
+
+        self._log("正在执行代码签名...")
+        self._log(f"使用 SignTool: {signtool_path}")
+        result = subprocess.run(
+            cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            check=False,
+        )
+        output = (result.stdout or "").strip()
+        if output:
+            self._log(output)
+        if result.returncode != 0:
+            raise RuntimeError("代码签名失败，请检查证书、密码、时间戳服务与 SignTool 配置。")
+
+        verify_cmd = [signtool_path, "verify", "/pa", exe_path]
+        verify_result = subprocess.run(
+            verify_cmd,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            text=True,
+            encoding='utf-8',
+            errors='replace',
+            check=False,
+        )
+        verify_output = (verify_result.stdout or "").strip()
+        if verify_output:
+            self._log(verify_output)
+        if verify_result.returncode != 0:
+            raise RuntimeError("签名完成，但签名校验未通过。")
+
+        self._log("代码签名与校验完成")
 
     def build(self, config: dict):
         """
@@ -289,6 +381,9 @@ import base64
                     self._log(f"警告: 文件膨胀返回: {res.get('message')}")
                 else:
                     self._log(f"文件膨胀完成! {res.get('message')}")
+
+            # ============ 代码签名 ============
+            self._sign_output(exe_path, config)
 
             # ============ 清理 ============
             self._log("清理临时文件...")

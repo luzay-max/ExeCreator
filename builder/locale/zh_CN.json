@@ -36,8 +36,14 @@
     "lbl_meta_desc": "文件描述:",
     "lbl_meta_copyright": "版权信息:",
     "lbl_meta_version": "版本号 (X.X.X.X):",
+    "lbl_signtool_path": "SignTool 路径:",
+    "lbl_signing_cert_path": "PFX 证书路径:",
+    "lbl_signing_password": "证书密码:",
+    "lbl_timestamp_url": "时间戳服务 URL:",
     
     "chk_obfuscation": "启用代码混淆 （随机化变量名 + 插入垃圾代码，降低杀软识别率）",
+    "chk_signing": "启用代码签名（可选，需本机已安装 SignTool 并准备好 PFX 证书）",
+    "msg_signing_hint": "提示: 签名密码仅本次构建使用，不会写入历史记录。",
     
     "btn_browse": "浏览",
     

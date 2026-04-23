@@ -14,6 +14,13 @@ class HistoryManager:
         self.history_dir = os.path.dirname(os.path.abspath(__file__))
         self.history_file = os.path.join(self.history_dir, history_file)
 
+    def _sanitize_config(self, config: dict) -> dict:
+        """移除不应持久化的临时数据与敏感信息。"""
+        sanitized = dict(config)
+        sanitized.pop("signing_password", None)
+        sanitized.pop("splash_image_data", None)
+        return sanitized
+
     def load_history(self) -> dict:
         """加载历史配置"""
         if not os.path.exists(self.history_file):
@@ -29,7 +36,8 @@ class HistoryManager:
     def save_history(self, config: dict):
         """保存历史配置"""
         try:
+            safe_config = self._sanitize_config(config)
             with open(self.history_file, 'w', encoding='utf-8') as f:
-                json.dump(config, f, ensure_ascii=False, indent=2)
+                json.dump(safe_config, f, ensure_ascii=False, indent=2)
         except Exception as e:
             logger.warning(f"无法保存历史配置: {e}")

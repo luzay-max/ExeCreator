@@ -36,8 +36,14 @@
     "lbl_meta_desc": "File Description:",
     "lbl_meta_copyright": "Copyright Info:",
     "lbl_meta_version": "Version (X.X.X.X):",
+    "lbl_signtool_path": "SignTool Path:",
+    "lbl_signing_cert_path": "PFX Certificate Path:",
+    "lbl_signing_password": "Certificate Password:",
+    "lbl_timestamp_url": "Timestamp Service URL:",
     
     "chk_obfuscation": "Enable Code Obfuscation (Randomize vars + junk code to evade AV)",
+    "chk_signing": "Enable Code Signing (Optional, requires local SignTool and a PFX certificate)",
+    "msg_signing_hint": "Note: The signing password is used only for the current build and is not saved to history.",
     
     "btn_browse": "Browse",
     
