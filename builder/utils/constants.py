@@ -6,7 +6,7 @@ constants.py — 全局常量定义
 """
 
 # ============ 版本信息 ============
-VERSION = "3.1.0"
+VERSION = "4.0.0"
 APP_NAME = "PrankLauncherBuilder"
 APP_TITLE = f"恶搞启动器生成工具 v{VERSION}"
 

