@@ -31,14 +31,14 @@ ExeCreator 仓库中的 **PrankLauncherBuilder** 是一个带图形界面的 Win
 
 | 部分 | 所在位置 | 作用 |
 | --- | --- | --- |
-| **Builder（生成器）** | \`builder/\` | 提供图形配置界面，整理模板并调用 PyInstaller |
-| **Launcher（运行模板）** | \`template/\` | 展示加载界面，执行目标程序查找、启动或回退流程 |
-| **测试** | \`tests/\` | 覆盖构建、扫描、工具模块和部分 v4.0 功能 |
+| **Builder（生成器）** | `builder/` | 提供图形配置界面，整理模板并调用 PyInstaller |
+| **Launcher（运行模板）** | `template/` | 展示加载界面，执行目标程序查找、启动或回退流程 |
+| **测试** | `tests/` | 覆盖构建、扫描、工具模块和部分 v4.0 功能 |
 
 **请区分两个不同的可执行文件：**
 
-- **生成器 EXE**：由根目录的 \`build.bat\` 或 \`PrankLauncherBuilder.spec\` 构建，默认位于 \`dist/PrankLauncherBuilder.exe\`。
-- **Launcher EXE**：通过生成器 GUI 的“生成”操作创建，默认写入仓库根目录的 \`output/\`。其文件名由 GUI 配置决定。
+- **生成器 EXE**：由根目录的 `build.bat` 或 `PrankLauncherBuilder.spec` 构建，默认位于 `dist/PrankLauncherBuilder.exe`。
+- **Launcher EXE**：通过生成器 GUI 的“生成”操作创建，默认写入仓库根目录的 `output/`。其文件名由 GUI 配置决定。
 
 这两个过程并不相同；打包生成器并不代表已经生成了 Launcher。
 
@@ -46,7 +46,7 @@ ExeCreator 仓库中的 **PrankLauncherBuilder** 是一个带图形界面的 Win
 
 | 模块 | 代码现状 | 说明 |
 | --- | --- | --- |
-| 图形界面 | 已有实现 | 基于 \`customtkinter\`，包含深浅主题、配置项及预览入口 |
+| 图形界面 | 已有实现 | 基于 `customtkinter`，包含深浅主题、配置项及预览入口 |
 | 配置模板 | 已有实现 | 可填写目标程序、窗口标题、图标与应用元数据 |
 | 扫描和启动 | 已有实现 | 查找目标程序；找到后尝试启动，未找到时可执行回退流程 |
 | EXE 构建 | 已有实现 | 使用 PyInstaller 生成 Windows 可执行文件 |
@@ -63,10 +63,10 @@ ExeCreator 仓库中的 **PrankLauncherBuilder** 是一个带图形界面的 Win
 - **操作系统**：建议 Windows 10 / 11（主要运行路径使用 Windows 专用 API，不保证 macOS / Linux 可用）。
 - **Python**：建议 3.11 或更高版本；项目的 Ruff / Mypy 配置面向 Python 3.11，依赖锁文件由另一 Python 版本生成，组合兼容性需实测。
 - **构建工具**：PyInstaller（由依赖文件声明）。
-- **GUI 组件**：\`customtkinter\`（目前在 GUI 源代码中直接引用，但**尚未列入** \`requirements.txt\` 与 \`requirements.lock\`）。
+- **GUI 组件**：`customtkinter`（目前在 GUI 源代码中直接引用，但**尚未列入** `requirements.txt` 与 `requirements.lock`）。
 
 > [!NOTE]
-> \`requirements.lock\` 内指定了第三方 PyPI 镜像地址。如需使用默认 PyPI 或企业内部镜像，请先审阅该文件；不要直接假设它可在所有网络环境中使用。
+> `requirements.lock` 内指定了第三方 PyPI 镜像地址。如需使用默认 PyPI 或企业内部镜像，请先审阅该文件；不要直接假设它可在所有网络环境中使用。
 
 ## 快速开始
 
@@ -83,7 +83,7 @@ py -3.11 -m venv .venv
 .\.venv\Scripts\Activate.ps1
 ~~~
 
-如果本机没有 \`py -3.11\`，可在确认版本后改用 \`python -m venv .venv\`。PowerShell 的脚本执行策略可能影响虚拟环境激活；也可以直接调用 \`.venv\Scripts\python.exe\`。
+如果本机没有 `py -3.11`，可在确认版本后改用 `python -m venv .venv`。PowerShell 的脚本执行策略可能影响虚拟环境激活；也可以直接调用 `.venv\Scripts\python.exe`。
 
 ### 2. 安装依赖
 
@@ -93,7 +93,7 @@ python -m pip install -r requirements.txt
 python -m pip install customtkinter
 ~~~
 
-目前需要单独安装 \`customtkinter\`，这是仓库依赖声明尚未补齐的问题。若希望按已锁定的 PyInstaller 依赖版本安装，可自行检查并改用 \`requirements.lock\`。
+目前需要单独安装 `customtkinter`，这是仓库依赖声明尚未补齐的问题。若希望按已锁定的 PyInstaller 依赖版本安装，可自行检查并改用 `requirements.lock`。
 
 ### 3. 打开生成器
 
@@ -101,13 +101,13 @@ python -m pip install customtkinter
 python builder/builder_gui.py
 ~~~
 
-也可尝试仓库提供的 \`run_builder.bat\`；但它仅检测 Python 或已有打包 EXE，**不会自动补齐全部 GUI 依赖**。
+也可尝试仓库提供的 `run_builder.bat`；但它仅检测 Python 或已有打包 EXE，**不会自动补齐全部 GUI 依赖**。
 
 首次体验时，建议仅在授权的测试机器上查看 GUI、切换主题、预览加载效果。不要使用真实公司的名称、商标、图标或签名信息冒充官方软件。
 
 ### 4. 理解生成流程
 
-生成器界面提供基础配置、模板预览、构建操作及日志显示。其核心构建逻辑位于 \`builder/builder_core.py\`，默认将生成文件放在 \`output/\`，构建过程中的临时目录为 \`temp_build_env/\`。
+生成器界面提供基础配置、模板预览、构建操作及日志显示。其核心构建逻辑位于 `builder/builder_core.py`，默认将生成文件放在 `output/`，构建过程中的临时目录为 `temp_build_env/`。
 
 某些选项涉及系统交互、数据回传或第三方网络上传。对这些功能进行测试前，请先阅读下方的[安全与隐私](#安全与隐私)章节。
 
@@ -115,11 +115,11 @@ python builder/builder_gui.py
 
 如果需要研究生成器本身的 Windows 打包过程，可查看以下仓库文件：
 
-- \`PrankLauncherBuilder.spec\`：PyInstaller 构建配置。
-- \`build.bat\`：构建脚本，会清理既有的 \`build_builder/\`、\`dist/\`、\`logs/\` 等目录。
-- \`build_portable.bat\`：尝试准备嵌入式 Python 环境的实验性便携打包脚本，**尚不能视为经过验证的一键打包方案**。
+- `PrankLauncherBuilder.spec`：PyInstaller 构建配置。
+- `build.bat`：构建脚本，会清理既有的 `build_builder/`、`dist/`、`logs/` 等目录。
+- `build_portable.bat`：尝试准备嵌入式 Python 环境的实验性便携打包脚本，**尚不能视为经过验证的一键打包方案**。
 
-**注意：** 当前 \`PrankLauncherBuilder.spec\` 声明了管理员权限请求（\`uac_admin=True\`）；执行或修改构建流程前应检查这项设置是否符合实际需求。请勿通过关闭防病毒软件、绕过系统保护或隐藏真实用途来解决安全告警。
+**注意：** 当前 `PrankLauncherBuilder.spec` 声明了管理员权限请求（`uac_admin=True`）；执行或修改构建流程前应检查这项设置是否符合实际需求。请勿通过关闭防病毒软件、绕过系统保护或隐藏真实用途来解决安全告警。
 
 ## 项目结构
 
@@ -153,7 +153,7 @@ ExeCreator/
 
 ## 测试与开发
 
-项目包含 \`tests/\`，但**仓库未给出经过验证的总体测试覆盖率**，因此不应宣称“覆盖率超过 90%”。
+项目包含 `tests/`，但**仓库未给出经过验证的总体测试覆盖率**，因此不应宣称“覆盖率超过 90%”。
 
 安装开发测试工具后，可尝试运行：
 
@@ -175,7 +175,7 @@ python -m ruff check builder template tests
 2. **避免干扰操作**：模拟蓝屏、声音和鼠标效果可能造成误解或影响正常使用；不应在真实工作环境或他人设备上试验。
 3. **谨慎处理网络回传**：启用 Webhook 后，程序可能发送执行事件、目标程序信息，以及主机名、操作系统、架构、用户名等设备信息。应事先取得同意并确认数据去向；不要收集或发送不必要的个人信息。
 4. **留意第三方上传**：代码包含上传到公共文件服务的功能。将构建产物上传到第三方可能使文件脱离你的控制；不要上传包含凭据、个人资料或内部信息的文件。
-5. **保护本地配置**：\`builder/history_manager.py\` 会将部分配置保存到 \`builder/history.json\`。虽然代码会排除签名密码和启动图像数据，但历史配置仍可能含有路径、URL 等敏感内容，提交代码前请自行检查。
+5. **保护本地配置**：`builder/history_manager.py` 会将部分配置保存到 `builder/history.json`。虽然代码会排除签名密码和启动图像数据，但历史配置仍可能含有路径、URL 等敏感内容，提交代码前请自行检查。
 6. **遵守软件授权**：第三方商标、软件素材、证书和名称必须有合法使用权限。编译产物受到安全产品告警时，应核对原因，不要以规避检测为目标。
 
 如发现数据泄露或其他安全问题，请不要在公开 Issue 中直接粘贴密钥、Webhook 地址、凭据或个人信息。
@@ -185,7 +185,7 @@ python -m ruff check builder template tests
 <details>
 <summary>运行 GUI 提示 No module named 'customtkinter'？</summary>
 
-GUI 源文件依赖 \`customtkinter\`，当前依赖清单尚未声明它。检查正在使用的 Python 虚拟环境，并在同一环境内安装该依赖：
+GUI 源文件依赖 `customtkinter`，当前依赖清单尚未声明它。检查正在使用的 Python 虚拟环境，并在同一环境内安装该依赖：
 
 ~~~powershell
 python -m pip install customtkinter
@@ -196,28 +196,28 @@ python -m pip install customtkinter
 <details>
 <summary>为什么根目录的 build.bat 与 GUI 的“生成”输出不一致？</summary>
 
-\`build.bat\` 打包的是**生成器**，使用 \`PrankLauncherBuilder.spec\`，默认输出在 \`dist/\`。GUI 的“生成”功能由 \`BuilderCore\` 实现，默认输出在 \`output/\`。
+`build.bat` 打包的是**生成器**，使用 `PrankLauncherBuilder.spec`，默认输出在 `dist/`。GUI 的“生成”功能由 `BuilderCore` 实现，默认输出在 `output/`。
 
 </details>
 
 <details>
 <summary>为什么 Linux 或 macOS 下可能无法运行？</summary>
 
-项目使用 \`winreg\`、\`winsound\`、Windows 特定 API 与 Windows EXE 打包逻辑，目前按 Windows 项目维护。其他平台尚无完整支持承诺。
+项目使用 `winreg`、`winsound`、Windows 特定 API 与 Windows EXE 打包逻辑，目前按 Windows 项目维护。其他平台尚无完整支持承诺。
 
 </details>
 
 <details>
 <summary>为什么打包脚本报错或提示缺失资源？</summary>
 
-先核对 Python / PyInstaller 版本、当前工作目录及 \`template/\` 是否齐全。注意部分脚本仍带有旧版本的输出提示，\`build_portable.bat\` 的完整性也需要进一步验证。保留错误日志提交可复现的 Issue，切勿盲目关闭安全防护。
+先核对 Python / PyInstaller 版本、当前工作目录及 `template/` 是否齐全。注意部分脚本仍带有旧版本的输出提示，`build_portable.bat` 的完整性也需要进一步验证。保留错误日志提交可复现的 Issue，切勿盲目关闭安全防护。
 
 </details>
 
 <details>
 <summary>当前可以直接按 MIT 许可证使用吗？</summary>
 
-**不能据此作出判断。** 旧 README 曾标注 MIT，但当前仓库根目录没有 \`LICENSE\` 文件。请等待仓库维护者添加并明确许可证文本；在此之前不要假设已获得 MIT 授权。
+**不能据此作出判断。** 旧 README 曾标注 MIT，但当前仓库根目录没有 `LICENSE` 文件。请等待仓库维护者添加并明确许可证文本；在此之前不要假设已获得 MIT 授权。
 
 </details>
 
@@ -230,7 +230,7 @@ python -m pip install customtkinter
 - [ ] 修复或重写实验性便携构建流程，避免缺失资源与版本提示混乱。
 - [ ] 补充隐私说明、显式授权提示、日志脱敏与默认安全配置。
 - [ ] 完善错误处理、配置校验、GUI 无障碍体验与开发文档。
-- [ ] 由维护者正式确定开源许可证并添加 \`LICENSE\` 文件。
+- [ ] 由维护者正式确定开源许可证并添加 `LICENSE` 文件。
 
 已有的计划文档可参考 [v4.0 开发计划](v4.0_开发计划.md) 与 [PLAN.md](PLAN.md)，但其中部分想法可能已过时或并未完成，应以当前代码和测试为准。
 
@@ -240,7 +240,7 @@ python -m pip install customtkinter
 
 提交 PR 时，建议写清楚修改背景、影响范围与验证方法；涉及 GUI 请附真实截图，涉及系统或网络行为请说明授权范围和风险控制措施。
 
-**许可证状态：尚待明确。** 截至本次文档修订，仓库根目录未发现 \`LICENSE\` 文件，因此不再沿用旧 README 中未经文件支持的 MIT 声明。许可证由维护者确定后，请同步更新本节与仓库元信息。
+**许可证状态：尚待明确。** 截至本次文档修订，仓库根目录未发现 `LICENSE` 文件，因此不再沿用旧 README 中未经文件支持的 MIT 声明。许可证由维护者确定后，请同步更新本节与仓库元信息。
 
 ---
 
